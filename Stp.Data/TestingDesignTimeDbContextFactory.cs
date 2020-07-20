@@ -11,7 +11,7 @@ namespace Stp.Data
         public TestingDbContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<TestingDbContext>();
-            optionsBuilder.UseNpgsql("Server=localhost; Port=5432; User Id=postgres; Password=postgres; Database=testing", options => options.CommandTimeout(3600));
+            optionsBuilder.UseNpgsql("Server=localhost; Port=5432; User Id=postgres; Password=123qweasd; Database=testing", options => options.CommandTimeout(3600));
             return new TestingDbContext(optionsBuilder.Options);
         }
     }

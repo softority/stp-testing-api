@@ -16,7 +16,8 @@ namespace Stp.Data
         {
             var optionsBuilder = new DbContextOptionsBuilder<TestingDbContext>();
             // TODO: <!!> move to config
-            optionsBuilder.UseNpgsql("Server=localhost; Port=5432; User Id=postgres; Password=postgres; Database=testing");
+            // 
+            optionsBuilder.UseNpgsql("Server=localhost; Port=5432; User Id=postgres; Password=123qweasd; Database=testing");
 
             return new TestingDbContext(optionsBuilder.Options);
         }

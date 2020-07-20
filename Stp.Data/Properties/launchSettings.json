@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Stp.Data": {
+      "commandName": "Executable",
+      "executablePath": "F:\\C#\\softority\\stp-testing-api\\Stp.TestingApi\\bin\\Debug\\netcoreapp3.1\\Stp.TestingApi.exe"
+    }
+  }
+}
