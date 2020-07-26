@@ -54,6 +54,7 @@ namespace Stp.TestingApi
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseCors(new Action<Microsoft.AspNetCore.Cors.Infrastructure.CorsPolicyBuilder>((x) => x.AllowAnyOrigin()));
 
             app.UseHttpsRedirection();
 
