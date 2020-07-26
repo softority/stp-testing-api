@@ -13,6 +13,10 @@ using Microsoft.Extensions.Logging;
 using Npgsql;
 using Microsoft.EntityFrameworkCore;
 using Stp.Data;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Stp.TestingApi
 {
@@ -35,6 +39,12 @@ namespace Stp.TestingApi
                 services.AddControllers();
                 services.AddOpenApiDocument(document =>
                     document.PostProcess = d => d.Info.Title = "STP API");
+
+            services.AddMvc().AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -55,6 +65,7 @@ namespace Stp.TestingApi
             {
                 endpoints.MapControllers();
             });
+           
         }
     }
 }

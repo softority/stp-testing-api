@@ -20,6 +20,7 @@ namespace Stp.TestingApi.Controllers
             _db = db;
         }
 
+        /* https://localhost:5001/api/TestCategory/GetCategories */
         [HttpGet(nameof(GetCategories))]
         public IEnumerable<TestCategoryDto> GetCategories()
         {
