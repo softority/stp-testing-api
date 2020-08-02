@@ -18,7 +18,6 @@ namespace Stp.TestingApi.Contracts
         public int Points { get; set; }
         public int DurationMinutes { get; set; }
 
-        //[JsonConverter(typeof(StringEnumConverter))]
         public ExerciseType Type { get; set; }
         public ExerciseComplexity Complexity { get; set; }
         public ICollection<MultichoiceAnswerDto> MultichoiceAnswers { get; set; }
@@ -29,13 +28,4 @@ namespace Stp.TestingApi.Contracts
         }
     }
 
-    //public enum ExerciseComplexity
-    //{
-    //    [EnumMember(Value = "Low")]
-    //    Low,
-    //    [EnumMember(Value = "Medium")]
-    //    Medium,
-    //    [EnumMember(Value = "High")]
-    //    High
-    //}
 }
