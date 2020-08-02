@@ -44,8 +44,7 @@ namespace Stp.TestingApi.Controllers
                             Id = a.Id,
                             ExerciseId = a.ExerciseId,
                             IsCorrect = a.IsCorrect,
-                            Name = a.Name
-                            
+                            Name = a.Name                            
                         }).ToList()
                 });       
 
@@ -79,11 +78,11 @@ namespace Stp.TestingApi.Controllers
         /* https://localhost:5001/api/Exercise/UpdateExerciseName */
         public IActionResult UpdateExerciseName(long exerciseId, [FromBody]string name)
         {
-            Exercise exercise = FindExercise(exerciseId);
+            Exercise exercise = _db.ExerciseList.Find(exerciseId);
 
             if (exercise == null)
             {
-                return BadRequest();
+                return BadRequest($"Exercise with id={exerciseId} not found");
             }
 
             exercise.Name = name;
@@ -96,11 +95,11 @@ namespace Stp.TestingApi.Controllers
         /* https://localhost:5001/api/Exercise/UpdateExerciseDuration */
         public IActionResult UpdateExerciseDuration(long exerciseId, [FromBody]int duration)
         {
-            Exercise exercise = FindExercise(exerciseId);
+            Exercise exercise = _db.ExerciseList.Find(exerciseId);
 
             if (exercise == null)
             {
-                return BadRequest();
+                return BadRequest($"Exercise with id={exerciseId} not found");
             }
 
             exercise.DurationMinutes = duration;
@@ -113,11 +112,11 @@ namespace Stp.TestingApi.Controllers
         /* https://localhost:5001/api/Exercise/UpdateExercisePoints */
         public IActionResult UpdateExercisePoints(long exerciseId, [FromBody]int points)
         {
-            Exercise exercise = FindExercise(exerciseId);
+            Exercise exercise = _db.ExerciseList.Find(exerciseId);
 
             if (exercise == null)
             {
-                return BadRequest();
+                return BadRequest($"Exercise with id={exerciseId} not found");
             }
 
             exercise.Points = points;
@@ -130,11 +129,11 @@ namespace Stp.TestingApi.Controllers
         /* https://localhost:5001/api/Exercise/UpdateExerciseComplexity */
         public IActionResult UpdateExerciseComplexity(long exerciseId, [FromBody]ExerciseComplexity complexity)
         {
-            Exercise exercise = FindExercise(exerciseId);
+            Exercise exercise = _db.ExerciseList.Find(exerciseId);
 
             if (exercise == null)
             {
-                return BadRequest();
+                return BadRequest($"Exercise with id={exerciseId} not found");
             }
 
             exercise.Complexity = complexity;
@@ -147,11 +146,11 @@ namespace Stp.TestingApi.Controllers
         /* https://localhost:5001/api/Exercise/UpdateExerciseDescription */
         public IActionResult UpdateExerciseDescription(long exerciseId, [FromBody]string description)
         {
-            Exercise exercise = FindExercise(exerciseId);
+            Exercise exercise = _db.ExerciseList.Find(exerciseId);
 
             if (exercise == null)
             {
-                return BadRequest();
+                return BadRequest($"Exercise with id={exerciseId} not found");
             }
 
             exercise.Description = description;
@@ -164,22 +163,17 @@ namespace Stp.TestingApi.Controllers
         /* https://localhost:5001/api/Exercise/DeleteExercise */
         public IActionResult DeleteExercise(long exerciseId)
         {
-            Exercise exercise = FindExercise(exerciseId);
+            Exercise exercise = _db.ExerciseList.Find(exerciseId);
 
             if (exercise == null)
             {
-                return BadRequest();
+                return BadRequest($"Exercise with id={exerciseId} not found");
             }
 
             exercise.IsDeleted = true;
             _db.SaveChanges();
 
             return Ok();
-        }
-
-        private Exercise FindExercise(long id)
-        {
-            return _db.ExerciseList.Find(id);
         }
 
     }

@@ -27,6 +27,13 @@ namespace Stp.TestingApi.Controllers
         [HttpPost(nameof(AddExerciseAnswer))]
         public MultichoiceAnswerDto AddExerciseAnswer(long exerciseId, [FromBody]MultichoiceAnswerDto answerDto)
         {
+            Exercise exercise = _db.ExerciseList.Find(exerciseId);
+
+            if(exercise == null)
+            {
+                return null;
+            }
+
             MultichoiceExerciseAnswer answer = new MultichoiceExerciseAnswer()
             {
                 Name = answerDto.Name,
@@ -47,11 +54,11 @@ namespace Stp.TestingApi.Controllers
         [HttpPut(nameof(UpdateExerciseAnswer))]
         public IActionResult UpdateExerciseAnswer(long answerId, [FromBody]MultichoiceAnswerDto answerDto)
         {
-            MultichoiceExerciseAnswer answer = FindAnswer(answerId);
+            MultichoiceExerciseAnswer answer = _db.MultichoiceAnswerList.Find(answerId);
 
             if (answer == null)
             {
-                return BadRequest();
+                return BadRequest($"Answer with id={answerId} not found");
             }
 
             answer.IsCorrect = answerDto.IsCorrect;
@@ -66,11 +73,11 @@ namespace Stp.TestingApi.Controllers
         [HttpDelete(nameof(DeleteExerciseAnswer))]
         public IActionResult DeleteExerciseAnswer(long answerId)
         {
-            MultichoiceExerciseAnswer answer = FindAnswer(answerId);
+            MultichoiceExerciseAnswer answer = _db.MultichoiceAnswerList.Find(answerId);
 
             if (answer == null)
             {
-                return BadRequest();
+                return BadRequest($"Answer with id={answerId} not found");
             }
 
             answer.IsDeleted = true;
@@ -80,13 +87,6 @@ namespace Stp.TestingApi.Controllers
             return Ok();
         }
 
-        private MultichoiceExerciseAnswer FindAnswer(long id)
-        {
-            return _db.MultichoiceAnswerList.Find(id);
-        }
-
     }
-
-
     
 }
