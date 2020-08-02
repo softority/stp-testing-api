@@ -28,7 +28,8 @@ namespace Stp.TestingApi.Controllers
         public IEnumerable<ExerciseDto> GetExercisesByCategory(long exerciseCategoryId)
         {
             var res = _db.ExerciseList
-                .ToList().Where(x => x.ExerciseCategoryId == exerciseCategoryId)
+                .Where(x => x.ExerciseCategoryId == exerciseCategoryId)
+                .Include(x => x.MultichoiceAnswers)
                 .Select(x => new ExerciseDto()
                 {
                     Id = x.Id,
@@ -36,7 +37,16 @@ namespace Stp.TestingApi.Controllers
                     Description = x.Description,
                     Points = x.Points,
                     DurationMinutes = x.DurationMinutes, 
-                    Complexity = (ExerciseComplexity)x.Complexity
+                    Type = x.Type,
+                    Complexity = x.Complexity,
+                    MultichoiceAnswers = x.MultichoiceAnswers.Select(a =>  new MultichoiceAnswerDto() 
+                        {
+                            Id = a.Id,
+                            ExerciseId = a.ExerciseId,
+                            IsCorrect = a.IsCorrect,
+                            Name = a.Name
+                            
+                        }).ToList()
                 });       
 
             return res;
@@ -44,22 +54,25 @@ namespace Stp.TestingApi.Controllers
 
         /* https://localhost:5001/api/Exercise/AddExercise */
         [HttpPost(nameof(AddExercise))]
-        public IActionResult AddExercise(long exerciseCategoryId, [FromBody]ExerciseDto exercise)
+        public ExerciseDto AddExercise(long exerciseCategoryId, [FromBody]ExerciseDto exerciseDto)
         {
-            Exercise newExercise = new Exercise();
-            // maybe in the constructor?
-            newExercise.Id = (long)exercise.Id; 
-            newExercise.Name = exercise.Name; 
-            newExercise.Description = exercise.Description; 
-            newExercise.Points = exercise.Points; 
-            newExercise.DurationMinutes = exercise.DurationMinutes; 
-            newExercise.Complexity = (int)exercise.Complexity; 
+            Exercise exercise = new Exercise() 
+            {
+                ExerciseCategoryId = exerciseCategoryId,
+                Name = exerciseDto.Name,
+                Description = exerciseDto.Description,
+                Points = exerciseDto.Points,
+                DurationMinutes = exerciseDto.DurationMinutes,
+                Type = exerciseDto.Type,
+                Complexity = exerciseDto.Complexity
+            };
 
-            _db.ExerciseList.Add(newExercise);
-            //_db.SaveChangesAsync(); // do not work. server settings?
+            _db.ExerciseList.Add(exercise);
             _db.SaveChanges();
 
-            return Ok();
+            exerciseDto.Id = exercise.Id;
+
+            return exerciseDto;
         }
 
         [HttpPut(nameof(UpdateExerciseName))]
@@ -124,7 +137,7 @@ namespace Stp.TestingApi.Controllers
                 return BadRequest();
             }
 
-            exercise.Complexity = (int)complexity;
+            exercise.Complexity = complexity;
             _db.SaveChanges();
 
             return Ok();
@@ -147,7 +160,7 @@ namespace Stp.TestingApi.Controllers
             return Ok();
         }
 
-        [HttpPut(nameof(DeleteExercise))]
+        [HttpDelete(nameof(DeleteExercise))]
         /* https://localhost:5001/api/Exercise/DeleteExercise */
         public IActionResult DeleteExercise(long exerciseId)
         {
@@ -166,20 +179,8 @@ namespace Stp.TestingApi.Controllers
 
         private Exercise FindExercise(long id)
         {
-            var res = _db.ExerciseList
-                .Where(x => (x.Id == id))
-                .FirstOrDefault();
-
-            return res;
+            return _db.ExerciseList.Find(id);
         }
 
-        private Exercise FindExerciseIgnoringFilters(long id)
-        {
-            var res = _db.ExerciseList.IgnoreQueryFilters()
-                .Where(x => (x.Id == id))                
-                .FirstOrDefault();
-
-            return res;
-        }
     }
 }

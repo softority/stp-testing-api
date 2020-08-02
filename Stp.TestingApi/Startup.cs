@@ -40,10 +40,10 @@ namespace Stp.TestingApi
                 services.AddOpenApiDocument(document =>
                     document.PostProcess = d => d.Info.Title = "STP API");
 
-            services.AddMvc().AddJsonOptions(options =>
-                {
-                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-                });
+            //services.AddMvc().AddJsonOptions(options =>
+            //    {
+            //        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            //    });
 
         }
 

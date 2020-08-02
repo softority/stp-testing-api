@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Stp.Data.Entities;
 
 namespace Stp.TestingApi.Contracts
 {
@@ -17,17 +18,24 @@ namespace Stp.TestingApi.Contracts
         public int Points { get; set; }
         public int DurationMinutes { get; set; }
 
-        [JsonConverter(typeof(StringEnumConverter))]
+        //[JsonConverter(typeof(StringEnumConverter))]
+        public ExerciseType Type { get; set; }
         public ExerciseComplexity Complexity { get; set; }
+        public ICollection<MultichoiceAnswerDto> MultichoiceAnswers { get; set; }
+
+        public ExerciseDto()
+        {
+            MultichoiceAnswers = new List<MultichoiceAnswerDto>();
+        }
     }
 
-    public enum ExerciseComplexity
-    {
-        [EnumMember(Value = "Low")]
-        Low,
-        [EnumMember(Value = "Medium")]
-        Medium,
-        [EnumMember(Value = "High")]
-        High
-    }
+    //public enum ExerciseComplexity
+    //{
+    //    [EnumMember(Value = "Low")]
+    //    Low,
+    //    [EnumMember(Value = "Medium")]
+    //    Medium,
+    //    [EnumMember(Value = "High")]
+    //    High
+    //}
 }

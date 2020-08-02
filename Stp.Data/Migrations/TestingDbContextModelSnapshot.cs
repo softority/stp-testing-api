@@ -49,15 +49,41 @@ namespace Stp.Data.Migrations
                     b.Property<int>("Points")
                         .HasColumnType("integer");
 
-                    b.Property<string>("TestSectionId")
-                        .HasColumnType("text");
-
-                    b.Property<long>("Type")
+                    b.Property<long>("TestSectionId")
                         .HasColumnType("bigint");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
                     b.ToTable("Exercise");
+                });
+
+            modelBuilder.Entity("Stp.Data.Entities.MultichoiceExerciseAnswer", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<long>("ExerciseId")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("IsCorrect")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExerciseId");
+
+                    b.ToTable("MultichoiceExerciseAnswer");
                 });
 
             modelBuilder.Entity("Stp.Data.Entities.TestCategory", b =>
@@ -84,6 +110,15 @@ namespace Stp.Data.Migrations
                     b.HasIndex("ParentId");
 
                     b.ToTable("TestCategory");
+                });
+
+            modelBuilder.Entity("Stp.Data.Entities.MultichoiceExerciseAnswer", b =>
+                {
+                    b.HasOne("Stp.Data.Entities.Exercise", "Exercise")
+                        .WithMany("MultichoiceAnswers")
+                        .HasForeignKey("ExerciseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Stp.Data.Entities.TestCategory", b =>

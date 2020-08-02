@@ -9,8 +9,8 @@ using Stp.Data;
 namespace Stp.Data.Migrations
 {
     [DbContext(typeof(TestingDbContext))]
-    [Migration("20200721183640_AddExerciseTable")]
-    partial class AddExerciseTable
+    [Migration("20200728180253_NewMigration")]
+    partial class NewMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -36,8 +36,8 @@ namespace Stp.Data.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<long>("DurationMinutes")
-                        .HasColumnType("bigint");
+                    b.Property<int>("DurationMinutes")
+                        .HasColumnType("integer");
 
                     b.Property<long>("ExerciseCategoryId")
                         .HasColumnType("bigint");
@@ -48,14 +48,14 @@ namespace Stp.Data.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
-                    b.Property<long>("Points")
+                    b.Property<int>("Points")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("TestSectionId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("TestSectionId")
-                        .HasColumnType("text");
-
-                    b.Property<long>("Type")
-                        .HasColumnType("bigint");
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 

@@ -18,34 +18,37 @@ namespace Stp.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<TestCategory>().HasQueryFilter(x => EF.Property<bool>(x, "IsDeleted") == false);
             modelBuilder.Entity<Exercise>().HasQueryFilter(x => EF.Property<bool>(x, "IsDeleted") == false);
+            modelBuilder.Entity<MultichoiceExerciseAnswer>().HasQueryFilter(x => EF.Property<bool>(x, "IsDeleted") == false);
         }
 
-        public override int SaveChanges()
-        {
-            UpdateSoftDeleteStatuses();
-            return base.SaveChanges();
-        }
+        //public override int SaveChanges()
+        //{
+        //    UpdateSoftDeleteStatuses();
+        //    return base.SaveChanges();
+        //}
 
-        private void UpdateSoftDeleteStatuses()
-        {
-            foreach (var entry in ChangeTracker.Entries())
-            {
-                switch (entry.State)
-                {
-                    case EntityState.Added:
-                        entry.CurrentValues["IsDeleted"] = false;
-                        break;
-                    case EntityState.Deleted:
-                        entry.State = EntityState.Modified;
-                        entry.CurrentValues["IsDeleted"] = true;
-                        break;
-                }
-            }
-        }
+        //private void UpdateSoftDeleteStatuses()
+        //{
+        //    foreach (var entry in ChangeTracker.Entries())
+        //    {
+        //        switch (entry.State)
+        //        {
+        //            case EntityState.Added:
+        //                entry.CurrentValues["IsDeleted"] = false;
+        //                break;
+        //            case EntityState.Deleted:
+        //                entry.State = EntityState.Modified;
+        //                entry.CurrentValues["IsDeleted"] = true;
+        //                break;
+        //        }
+        //    }
+        //}
 
         public DbSet<TestCategory> TestCategoryList { get; set; }
         public DbSet<Exercise> ExerciseList { get; set; }
+        public DbSet<MultichoiceExerciseAnswer> MultichoiceAnswerList { get; set; }
 
-    }
+}
 }
