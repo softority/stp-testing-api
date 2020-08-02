@@ -16,6 +16,16 @@ namespace Stp.Data
             : base(options)
         { }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<TestCategory>().HasQueryFilter(x => EF.Property<bool>(x, "IsDeleted") == false);
+            modelBuilder.Entity<Exercise>().HasQueryFilter(x => EF.Property<bool>(x, "IsDeleted") == false);
+            modelBuilder.Entity<MultichoiceExerciseAnswer>().HasQueryFilter(x => EF.Property<bool>(x, "IsDeleted") == false);
+        }
+
         public DbSet<TestCategory> TestCategoryList { get; set; }
-    }
+        public DbSet<Exercise> ExerciseList { get; set; }
+        public DbSet<MultichoiceExerciseAnswer> MultichoiceAnswerList { get; set; }
+
+}
 }
