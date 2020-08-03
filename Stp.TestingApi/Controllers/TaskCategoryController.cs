@@ -4,25 +4,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Stp.Data;
 using Stp.TestingApi.Contracts;
 
 namespace Stp.TestingApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TestCategoryController : ControllerBase
+    public class TaskCategoryController : ControllerBase
     {
-        private readonly TestingDbContext _db;
-        public TestCategoryController(TestingDbContext db)
-        {
-            _db = db;
-        }
-
         /* https://localhost:5001/api/TestCategory/GetCategories */
         [HttpGet(nameof(GetCategories))]
-        public List<TestCategoryDto> GetCategories()
+        public List<TaskCategoryDto> GetCategories()
         {
             throw new NotImplementedException();
         }
@@ -35,7 +27,7 @@ namespace Stp.TestingApi.Controllers
         }
 
         [HttpPut(nameof(UpdateCategoryName))]
-        public IActionResult UpdateCategoryName(long categoryId, [FromBody]string name)
+        public IActionResult UpdateCategoryName(long categoryId, [FromBody] string name)
         {
             throw new NotImplementedException();
         }
@@ -56,23 +48,5 @@ namespace Stp.TestingApi.Controllers
 
             throw new NotImplementedException();
         }
-    }
-    public class MoveCategoryCommand
-    {
-        /// <summary>
-        /// If null - moving within the root
-        /// </summary>
-        public long? ParentCategoryId { get; set; }
-        public long CategoryId { get; set; }
-        public int Position { get; set; }
-    }
-
-    public class AddCategoryCommand
-    {
-        /// <summary>
-        /// If null - adding to the root
-        /// </summary>
-        public long? ParentCategoryId { get; set; }
-        public string Name { get; set; }
     }
 }
