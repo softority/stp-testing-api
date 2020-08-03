@@ -15,46 +15,46 @@ namespace Stp.TestingApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MultichoiceExerciseAnswerController : ControllerBase
+    public class MultichoiceTaskAnswerController : ControllerBase
     {
         private readonly TestingDbContext _db;
-        public MultichoiceExerciseAnswerController(TestingDbContext db)
+        public MultichoiceTaskAnswerController(TestingDbContext db)
         {
             _db = db;
         }
 
-        /* https://localhost:5001/api/MultichoiceExerciseAnswer/AddExerciseAnswer */
-        [HttpPost(nameof(AddExerciseAnswer))]
-        public MultichoiceAnswerDto AddExerciseAnswer(long exerciseId, [FromBody]MultichoiceAnswerDto answerDto)
+        /* https://localhost:5001/api/MultichoiceTaskAnswer/AddTaskAnswer */
+        [HttpPost(nameof(AddTaskAnswer))]
+        public MultichoiceAnswerDto AddTaskAnswer(long taskId, [FromBody]MultichoiceAnswerDto answerDto)
         {
-            Exercise exercise = _db.ExerciseList.Find(exerciseId);
+            StpTask task = _db.TaskList.Find(taskId);
 
-            if(exercise == null)
+            if(task == null)
             {
                 return null;
             }
 
-            MultichoiceExerciseAnswer answer = new MultichoiceExerciseAnswer()
+            MultichoiceTaskAnswer answer = new MultichoiceTaskAnswer()
             {
                 Name = answerDto.Name,
                 IsCorrect = answerDto.IsCorrect,
-                ExerciseId = exerciseId
+                TaskId = taskId
             };
 
             _db.MultichoiceAnswerList.Add(answer);
             _db.SaveChanges();
 
             answerDto.Id = answer.Id;
-            answerDto.ExerciseId = exerciseId;
+            answerDto.TaskId = taskId;
 
             return answerDto;
         }
 
-        /* https://localhost:5001/api/MultichoiceExerciseAnswer/UpdateExerciseAnswer */
-        [HttpPut(nameof(UpdateExerciseAnswer))]
-        public IActionResult UpdateExerciseAnswer(long answerId, [FromBody]MultichoiceAnswerDto answerDto)
+        /* https://localhost:5001/api/MultichoiceTaskAnswer/UpdateTaskAnswer */
+        [HttpPut(nameof(UpdateTaskAnswer))]
+        public IActionResult UpdateTaskAnswer(long answerId, [FromBody]MultichoiceAnswerDto answerDto)
         {
-            MultichoiceExerciseAnswer answer = _db.MultichoiceAnswerList.Find(answerId);
+            MultichoiceTaskAnswer answer = _db.MultichoiceAnswerList.Find(answerId);
 
             if (answer == null)
             {
@@ -69,11 +69,11 @@ namespace Stp.TestingApi.Controllers
             return Ok();
         }
 
-        /* https://localhost:5001/api/MultichoiceExerciseAnswer/DeleteExerciseAnswer */
-        [HttpDelete(nameof(DeleteExerciseAnswer))]
-        public IActionResult DeleteExerciseAnswer(long answerId)
+        /* https://localhost:5001/api/MultichoiceTaskAnswer/DeleteTaskAnswer */
+        [HttpDelete(nameof(DeleteTaskAnswer))]
+        public IActionResult DeleteTaskAnswer(long answerId)
         {
-            MultichoiceExerciseAnswer answer = _db.MultichoiceAnswerList.Find(answerId);
+            MultichoiceTaskAnswer answer = _db.MultichoiceAnswerList.Find(answerId);
 
             if (answer == null)
             {

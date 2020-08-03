@@ -12,6 +12,6 @@ namespace Stp.TestingApi.Contracts
         public string Name { get; set; }
         public bool IsCorrect { get; set; }
         public bool IsDeleted { get; set; }
-        public long ExerciseId { get; set; }
+        public long TaskId { get; set; }
     }
 }

@@ -6,15 +6,17 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Stp.Data.Entities
 {
-    [Table(nameof(MultichoiceExerciseAnswer))]
-    public class MultichoiceExerciseAnswer
+    [Table(nameof(MultichoiceTaskAnswer))]
+    public class MultichoiceTaskAnswer
     {
         public long Id { get; set; }
         public string Name { get; set; }
         public bool IsCorrect { get; set; }
         public bool IsDeleted { get; set; }
-        public long ExerciseId { get; set; }
-        public virtual Exercise Exercise { get; set; }
+
+        [ForeignKey(nameof(Task))]
+        public long TaskId { get; set; }
+        public virtual StpTask Task { get; set; }
 
     }
 }

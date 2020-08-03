@@ -10,7 +10,7 @@ using Stp.Data.Entities;
 
 namespace Stp.TestingApi.Contracts
 {
-    public class ExerciseDto
+    public class TaskDto
     {
         public long? Id { get; set; }
         public string Name { get; set; }
@@ -18,11 +18,11 @@ namespace Stp.TestingApi.Contracts
         public int Points { get; set; }
         public int DurationMinutes { get; set; }
 
-        public ExerciseType Type { get; set; }
-        public ExerciseComplexity Complexity { get; set; }
+        public TaskType Type { get; set; }
+        public TaskComplexity Complexity { get; set; }
         public ICollection<MultichoiceAnswerDto> MultichoiceAnswers { get; set; }
 
-        public ExerciseDto()
+        public TaskDto()
         {
             MultichoiceAnswers = new List<MultichoiceAnswerDto>();
         }

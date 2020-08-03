@@ -4,26 +4,28 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Stp.Data.Entities;
 
 namespace Stp.TestingApi.Controllers
 {
-    public enum TaskType
-    {
-        Multichoice,
-        Coding
-    }
-    public enum TaskComplexity
-    {
-        Low,
-        Medium,
-        High
-    }
+    //public enum TaskType
+    //{
+    //    Multichoice,
+    //    Coding
+    //}
+    //public enum TaskComplexity
+    //{
+    //    Low,
+    //    Medium,
+    //    High
+    //}
     public class TaskSummaryDto
     {
         public long Id { get; set; }
         public string Name { get; set; }
         public TaskType Type { get; set; }
         public int Points { get; set; }
+        public int Position { get; set; }
         public int DurationMinutes { get; set; }
         public List<string> Skills { get; set; }
         public TaskComplexity Complexity { get; set; }

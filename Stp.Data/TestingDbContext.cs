@@ -10,6 +10,9 @@ namespace Stp.Data
     // dotnet ef migrations add <Migration name> -o Migrations
     // dotnet ef database update
 
+    // to remove last added migration:
+    // dotnet ef migrations remove
+
     public class TestingDbContext : DbContext
     {
         public TestingDbContext(DbContextOptions<TestingDbContext> options)
@@ -19,13 +22,13 @@ namespace Stp.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<TestCategory>().HasQueryFilter(x => EF.Property<bool>(x, "IsDeleted") == false);
-            modelBuilder.Entity<Exercise>().HasQueryFilter(x => EF.Property<bool>(x, "IsDeleted") == false);
-            modelBuilder.Entity<MultichoiceExerciseAnswer>().HasQueryFilter(x => EF.Property<bool>(x, "IsDeleted") == false);
+            modelBuilder.Entity<StpTask>().HasQueryFilter(x => EF.Property<bool>(x, "IsDeleted") == false);
+            modelBuilder.Entity<MultichoiceTaskAnswer>().HasQueryFilter(x => EF.Property<bool>(x, "IsDeleted") == false);
         }
 
         public DbSet<TestCategory> TestCategoryList { get; set; }
-        public DbSet<Exercise> ExerciseList { get; set; }
-        public DbSet<MultichoiceExerciseAnswer> MultichoiceAnswerList { get; set; }
+        public DbSet<StpTask> TaskList { get; set; }
+        public DbSet<MultichoiceTaskAnswer> MultichoiceAnswerList { get; set; }
 
 }
 }
