@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Stp.TestingApi.Controllers
 {
-    
     [Route("api/[controller]")]
     [ApiController]
     public class TestSectionController : ControllerBase
