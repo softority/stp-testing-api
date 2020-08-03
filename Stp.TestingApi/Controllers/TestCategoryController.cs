@@ -60,7 +60,7 @@ namespace Stp.TestingApi.Controllers
     public class MoveCategoryCommand
     {
         /// <summary>
-        /// If null - adding to the root
+        /// If null - moving within the root
         /// </summary>
         public long? ParentCategoryId { get; set; }
         public long CategoryId { get; set; }

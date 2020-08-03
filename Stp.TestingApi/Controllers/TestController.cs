@@ -27,14 +27,20 @@ namespace Stp.TestingApi.Controllers
         public int TasksCount { get; set; }
         public List<TaskDto> Tasks { get; set; }
     }
-    public class AddTestCommand
+    public class CreateTestCommand
     {
+        /// <summary>
+        /// Id of the test category to which the test is being added
+        /// </summary>
         public long TestCategoryId { get; set; }
         public string Name { get; set; }
         public int Position { get; set; }
     }
     public class AddTaskCommand
     {
+        /// <summary>
+        /// Id of the existing task which is about to add
+        /// </summary>
         public long TaskId { get; set; }
 
         /// <summary>
@@ -60,27 +66,37 @@ namespace Stp.TestingApi.Controllers
     public class TestController : ControllerBase
     {
         [HttpGet(nameof(GetTestById))]
-        public List<TestDto> GetTestById(long testId)
+        public TestDto GetTestById(long testId)
         {
             throw new NotImplementedException();
         }
 
-        [HttpPost(nameof(AddTest))]
-        public long AddTest(AddTestCommand cmd)
+        /// <returns>Id of the added test</returns>
+        [HttpPost(nameof(CreateTest))]
+        public long CreateTest(CreateTestCommand cmd)
         {
             throw new NotImplementedException();
         }
 
-        [HttpPost(nameof(AddTest))]
-        public long AddTask(AddTaskCommand cmd)
+        [HttpDelete(nameof(DeleteTest))]
+        public IActionResult DeleteTest(long testId)
         {
             throw new NotImplementedException();
         }
 
         /// <summary>
-        /// Removes a task from specified test section (a task itself is not deletes)
+        /// Add existing task to the test
         /// </summary>
-        [HttpPut(nameof(AddTest))]
+        [HttpPut(nameof(AddTask))]
+        public IActionResult AddTask(AddTaskCommand cmd)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Removes the task from specified test section (the task itself is not deletes)
+        /// </summary>
+        [HttpPut(nameof(RemoveTask))]
         public IActionResult RemoveTask(RemoveTaskCommand cmd)
         {
             throw new NotImplementedException();
@@ -101,10 +117,6 @@ namespace Stp.TestingApi.Controllers
             throw new NotImplementedException();
         }
 
-        [HttpDelete(nameof(DeleteTest))]
-        public IActionResult DeleteTest(long testId)
-        {
-            throw new NotImplementedException();
-        }
+        
     }
 }
