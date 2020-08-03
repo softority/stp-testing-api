@@ -25,12 +25,12 @@ namespace Stp.TestingApi.Controllers
 
         /* https://localhost:5001/api/Task/GetTasksByCategory */
         [HttpGet(nameof(GetTasksByCategory))]
-        public IEnumerable<TaskDto> GetTasksByCategory(long taskCategoryId)
+        public IEnumerable<Contracts.TaskDto> GetTasksByCategory(long taskCategoryId)
         {
             var res = _db.TaskList
-                .Where(x => x.TaskCategoryId == taskCategoryId)
+                .Where(x => x.CategoryId == taskCategoryId)
                 .Include(x => x.MultichoiceAnswers)
-                .Select(x => new TaskDto()
+                .Select(x => new Contracts.TaskDto()
                 {
                     Id = x.Id,
                     Name = x.Name,
@@ -53,11 +53,11 @@ namespace Stp.TestingApi.Controllers
 
         /* https://localhost:5001/api/Task/AddTask */
         [HttpPost(nameof(AddTask))]
-        public TaskDto AddTask(long taskCategoryId, [FromBody]TaskDto task)
+        public Contracts.TaskDto AddTask(long taskCategoryId, [FromBody] Contracts.TaskDto task)
         {
             StpTask newTask = new StpTask() 
             {
-                TaskCategoryId = taskCategoryId,
+                CategoryId = taskCategoryId,
                 Name = task.Name,
                 Description = task.Description,
                 Points = task.Points,

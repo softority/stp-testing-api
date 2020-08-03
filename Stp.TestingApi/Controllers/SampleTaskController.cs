@@ -19,6 +19,13 @@ namespace Stp.TestingApi.Controllers
     //    Medium,
     //    High
     //}
+    
+    public class TaskDto
+    {
+        public TaskSummaryDto TaskSummary { get; set; }
+        public MultichoiceTaskInfoDto MultichoiceTaskInfo { get; set; }
+        public CodingTaskInfoDto CodingTaskInfo { get; set; }
+    }
     public class TaskSummaryDto
     {
         public long Id { get; set; }
@@ -30,13 +37,6 @@ namespace Stp.TestingApi.Controllers
         public List<string> Skills { get; set; }
         public TaskComplexity Complexity { get; set; }
     }
-    public class TaskInfoDto
-    {
-        public TaskSummaryDto TaskSummary { get; set; }
-        public MultichoiceTaskInfoDto MultichoiceTaskInfo { get; set; }
-        public CodingTaskInfoDto CodingTaskInfo { get; set; }
-    }
-
     public class MultichoiceTaskInfoDto
     {
         public string Question { get; set; }
@@ -60,7 +60,7 @@ namespace Stp.TestingApi.Controllers
     public class SampleTaskController : ControllerBase
     {
         [HttpGet(nameof(GetSampleTasks))]
-        public IEnumerable<TaskInfoDto> GetSampleTasks()
+        public IEnumerable<TaskDto> GetSampleTasks()
         {
             var skills = new List<string>() { "Arrays", ".NET", "C#", "Generics" };
             var mcInfo = new MultichoiceTaskInfoDto()
@@ -75,9 +75,9 @@ namespace Stp.TestingApi.Controllers
                     new MultichoiceTaskAnswerDto() { Id = 5, Name = "None of the above."}
                 }
             };
-            var res = new List<TaskInfoDto>()
+            var res = new List<TaskDto>()
             {
-                new TaskInfoDto()
+                new TaskDto()
                 { 
                     TaskSummary = new TaskSummaryDto() 
                     {
@@ -91,7 +91,7 @@ namespace Stp.TestingApi.Controllers
                     } ,
                     MultichoiceTaskInfo = mcInfo
                 },
-                new TaskInfoDto()
+                new TaskDto()
                 {
                     TaskSummary = new TaskSummaryDto()
                     {
@@ -105,7 +105,7 @@ namespace Stp.TestingApi.Controllers
                     } ,
                     MultichoiceTaskInfo = mcInfo
                 },
-                new TaskInfoDto()
+                new TaskDto()
                 {
                     TaskSummary = new TaskSummaryDto()
                     {
@@ -119,7 +119,7 @@ namespace Stp.TestingApi.Controllers
                     } ,
                     MultichoiceTaskInfo = mcInfo
                 },
-                new TaskInfoDto()
+                new TaskDto()
                 {
                     TaskSummary = new TaskSummaryDto()
                     {
