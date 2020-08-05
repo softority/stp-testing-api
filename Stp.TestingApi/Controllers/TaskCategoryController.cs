@@ -46,7 +46,7 @@ namespace Stp.TestingApi.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public ActionResult<TaskCategoryDto> CreateCategory(AddCategoryCommand cmd)
+        public ActionResult<TaskCategoryDto> CreateCategory(CreateCategoryCommand cmd)
         {
             // TODO: Validation
             if (cmd.ParentCategoryId != null)

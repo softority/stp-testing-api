@@ -28,8 +28,8 @@ namespace Stp.TestingApi.Controllers
         }
 
         /// <returns>Id of just added category</returns>
-        [HttpPost(nameof(AddCategory))]
-        public long AddCategory(AddCategoryCommand cmd)
+        [HttpPost(nameof(CreateCategory))]
+        public long CreateCategory(CreateCategoryCommand cmd)
         {
             throw new NotImplementedException();
         }
@@ -56,23 +56,5 @@ namespace Stp.TestingApi.Controllers
 
             throw new NotImplementedException();
         }
-    }
-    public class MoveCategoryCommand
-    {
-        /// <summary>
-        /// If null - moving within the root
-        /// </summary>
-        public long? ParentCategoryId { get; set; }
-        public long CategoryId { get; set; }
-        public int Position { get; set; }
-    }
-
-    public class AddCategoryCommand
-    {
-        /// <summary>
-        /// If null - adding to the root
-        /// </summary>
-        public long? ParentCategoryId { get; set; }
-        public string Name { get; set; }
     }
 }
