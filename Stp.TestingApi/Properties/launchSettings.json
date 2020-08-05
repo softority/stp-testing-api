@@ -20,7 +20,7 @@
     "Stp.TestingApi": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "api/SampleTask/GetSampleTasks",
+      "launchUrl": "api/TaskCategory/GetCategories",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

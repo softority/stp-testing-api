@@ -52,7 +52,7 @@ namespace Stp.TestingApi.Controllers
     {
         public long TaskId { get; set; }
         public int SectionId { get; set; }
-        public int TaskPosition { get; set; }
+        public int TaskPosition { get; set; }        
     }
 
     public class RemoveTaskCommand

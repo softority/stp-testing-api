@@ -20,7 +20,7 @@ namespace Stp.TestingApi.Controllers
     //    High
     //}
     
-    public class TaskDto
+    public class TaskDto   
     {
         public TaskSummaryDto TaskSummary { get; set; }
         public MultichoiceTaskInfoDto MultichoiceTaskInfo { get; set; }

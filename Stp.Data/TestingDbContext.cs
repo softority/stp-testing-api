@@ -22,11 +22,13 @@ namespace Stp.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<TestCategory>().HasQueryFilter(x => EF.Property<bool>(x, "IsDeleted") == false);
+            modelBuilder.Entity<TaskCategory>().HasQueryFilter(x => EF.Property<bool>(x, "IsDeleted") == false);
             modelBuilder.Entity<StpTask>().HasQueryFilter(x => EF.Property<bool>(x, "IsDeleted") == false);
             modelBuilder.Entity<MultichoiceTaskAnswer>().HasQueryFilter(x => EF.Property<bool>(x, "IsDeleted") == false);
         }
 
         public DbSet<TestCategory> TestCategoryList { get; set; }
+        public DbSet<TaskCategory> TaskCategoryList { get; set; }
         public DbSet<StpTask> TaskList { get; set; }
         public DbSet<MultichoiceTaskAnswer> MultichoiceAnswerList { get; set; }
 
