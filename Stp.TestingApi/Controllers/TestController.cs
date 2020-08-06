@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Stp.Data.Enums;
+using Stp.TestingApi.Contracts;
 
 namespace Stp.TestingApi.Controllers
 {
@@ -52,7 +53,7 @@ namespace Stp.TestingApi.Controllers
     {
         public long TaskId { get; set; }
         public int SectionId { get; set; }
-        public int TaskPosition { get; set; }
+        public int TaskPosition { get; set; }        
     }
 
     public class RemoveTaskCommand

@@ -12,20 +12,22 @@ namespace Stp.TestingApi.Contracts
 {
     public class TaskDto
     {
-        public long? Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public int Points { get; set; }
-        public int DurationMinutes { get; set; }
-
-        public TaskType Type { get; set; }
-        public TaskComplexity Complexity { get; set; }
-        public ICollection<MultichoiceAnswerDto> MultichoiceAnswers { get; set; }
-
-        public TaskDto()
-        {
-            MultichoiceAnswers = new List<MultichoiceAnswerDto>();
-        }
+        public TaskSummaryDto TaskSummary { get; set; }
+        public MultichoiceTaskInfoDto MultichoiceTaskInfo { get; set; }
+        public CodingTaskInfoDto CodingTaskInfo { get; set; }
     }
+
+    public class TaskSummaryDto
+    {
+        public long Id { get; set; }
+        public string Name { get; set; }
+        public TaskType Type { get; set; }
+        public int Points { get; set; }
+        public int Position { get; set; }
+        public int DurationMinutes { get; set; }
+        public List<string> Skills { get; set; }
+        public TaskComplexity Complexity { get; set; }
+    }
+    
 
 }

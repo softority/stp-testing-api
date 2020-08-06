@@ -8,18 +8,18 @@ using Stp.Data.Entities;
 
 namespace Stp.TestingApi.Controllers
 {
-    //public enum TaskType
-    //{
-    //    Multichoice,
-    //    Coding
-    //}
-    //public enum TaskComplexity
-    //{
-    //    Low,
-    //    Medium,
-    //    High
-    //}
-    
+    public enum TaskType
+    {
+        Multichoice,
+        Coding
+    }
+    public enum TaskComplexity
+    {
+        Low,
+        Medium,
+        High
+    }
+
     public class TaskDto
     {
         public TaskSummaryDto TaskSummary { get; set; }

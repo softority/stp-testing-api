@@ -14,6 +14,7 @@ namespace Stp.Data.Entities
         [ForeignKey(nameof(Category))]
         public long CategoryId { get; set; }
         public virtual TaskCategory Category { get; set; }
+
         public string Name { get; set; }
         public string Description { get; set; }
         public TaskType Type { get; set; }

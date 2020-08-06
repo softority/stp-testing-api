@@ -10,10 +10,10 @@ namespace Stp.Data.Entities
     {
         public long Id { get; set; }
         public string Name { get; set; }
-        public long ParentId { get; set; }
+        public long? ParentId { get; set; }
 
         [ForeignKey(nameof(ParentId))]
-        public TestCategory Parent { get; set; }
+        public virtual TestCategory Parent { get; set; }
         public int Position { get; set; }
         public bool IsDeleted { get; set; }
     }
