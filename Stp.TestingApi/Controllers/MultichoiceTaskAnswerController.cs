@@ -25,7 +25,7 @@ namespace Stp.TestingApi.Controllers
 
         /* https://localhost:5001/api/MultichoiceTaskAnswer/AddTaskAnswer */
         [HttpPost(nameof(AddTaskAnswer))]
-        public MultichoiceAnswerDto AddTaskAnswer(long taskId, [FromBody]MultichoiceAnswerDto answerDto)
+        public MultichoiceTaskAnswerDto AddTaskAnswer(long taskId, [FromBody]MultichoiceTaskAnswerDto answerDto)
         {
             StpTask task = _db.TaskList.Find(taskId);
 
@@ -45,14 +45,14 @@ namespace Stp.TestingApi.Controllers
             _db.SaveChanges();
 
             answerDto.Id = answer.Id;
-            answerDto.TaskId = taskId;
+            //answerDto.TaskId = taskId;
 
             return answerDto;
         }
 
         /* https://localhost:5001/api/MultichoiceTaskAnswer/UpdateTaskAnswer */
         [HttpPut(nameof(UpdateTaskAnswer))]
-        public IActionResult UpdateTaskAnswer(long answerId, [FromBody]MultichoiceAnswerDto answerDto)
+        public IActionResult UpdateTaskAnswer(long answerId, [FromBody]MultichoiceTaskAnswerDto answerDto)
         {
             MultichoiceTaskAnswer answer = _db.MultichoiceAnswerList.Find(answerId);
 

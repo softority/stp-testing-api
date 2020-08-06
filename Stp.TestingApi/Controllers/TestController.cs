@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Stp.Data.Enums;
+using Stp.TestingApi.Contracts;
 
 namespace Stp.TestingApi.Controllers
 {

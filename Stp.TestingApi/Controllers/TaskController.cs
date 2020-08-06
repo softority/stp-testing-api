@@ -32,21 +32,30 @@ namespace Stp.TestingApi.Controllers
                 .Include(x => x.MultichoiceAnswers)
                 .Select(x => new Contracts.TaskDto()
                 {
-                    Id = x.Id,
-                    Name = x.Name,
-                    Description = x.Description,
-                    Points = x.Points,
-                    DurationMinutes = x.DurationMinutes, 
-                    Type = x.Type,
-                    Complexity = x.Complexity,
-                    MultichoiceAnswers = x.MultichoiceAnswers.Select(a =>  new MultichoiceAnswerDto() 
+                    TaskSummary = new Contracts.TaskSummaryDto()
+                    {
+                        Id = x.Id,
+                        Name = x.Name,
+                        Type = x.Type,
+                        Points = x.Points,
+                        Position = x.Position,
+                        DurationMinutes = x.DurationMinutes,
+                        Complexity = x.Complexity,
+                        Skills = new List<string>()
+                    },
+
+                    MultichoiceTaskInfo = new Contracts.MultichoiceTaskInfoDto()
+                    {
+                        Answers = x.MultichoiceAnswers.Select(a => new Contracts.MultichoiceTaskAnswerDto()
                         {
                             Id = a.Id,
-                            TaskId = a.TaskId,
-                            IsCorrect = a.IsCorrect,
-                            Name = a.Name                            
+                            Name = a.Name,
+                            IsCorrect = a.IsCorrect
                         }).ToList()
-                });       
+                    },
+
+                    CodingTaskInfo = new Contracts.CodingTaskInfoDto()
+                }); ;       
 
             return res;
         }
@@ -55,21 +64,26 @@ namespace Stp.TestingApi.Controllers
         [HttpPost(nameof(AddTask))]
         public Contracts.TaskDto AddTask(long taskCategoryId, [FromBody] Contracts.TaskDto task)
         {
+
+            if (task.TaskSummary == null)
+            {
+                return null;
+            }
+
             StpTask newTask = new StpTask() 
             {
                 CategoryId = taskCategoryId,
-                Name = task.Name,
-                Description = task.Description,
-                Points = task.Points,
-                DurationMinutes = task.DurationMinutes,
-                Type = task.Type,
-                Complexity = task.Complexity
+                Name = task.TaskSummary.Name,          
+                Points = task.TaskSummary.Points,
+                DurationMinutes = task.TaskSummary.DurationMinutes,
+                Type = task.TaskSummary.Type,
+                Complexity = task.TaskSummary.Complexity
             };
 
             _db.TaskList.Add(newTask);
             _db.SaveChanges();
 
-            task.Id = task.Id;
+            task.TaskSummary.Id = newTask.Id;
 
             return task;
         }
