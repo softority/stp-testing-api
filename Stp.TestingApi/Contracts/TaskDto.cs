@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Stp.Data.Entities;
+using Stp.Data.Enums;
 
 namespace Stp.TestingApi.Contracts
 {
@@ -15,6 +16,7 @@ namespace Stp.TestingApi.Contracts
         public TaskSummaryDto TaskSummary { get; set; }
         public MultichoiceTaskInfoDto MultichoiceTaskInfo { get; set; }
         public CodingTaskInfoDto CodingTaskInfo { get; set; }
+        public List<SkillDto> Skills { get; set; }
     }
 
     public class TaskSummaryDto
@@ -24,8 +26,7 @@ namespace Stp.TestingApi.Contracts
         public TaskType Type { get; set; }
         public int Points { get; set; }
         public int Position { get; set; }
-        public int DurationMinutes { get; set; }
-        public List<string> Skills { get; set; }
+        public int DurationMinutes { get; set; }        
         public TaskComplexity Complexity { get; set; }
     }
     
