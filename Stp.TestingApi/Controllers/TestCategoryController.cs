@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Stp.Data;
+using Stp.Data.Entities;
 using Stp.TestingApi.Contracts;
 
 namespace Stp.TestingApi.Controllers
@@ -24,20 +25,53 @@ namespace Stp.TestingApi.Controllers
         [HttpGet(nameof(GetCategories))]
         public List<TestCategoryDto> GetCategories()
         {
-            throw new NotImplementedException();
+            var res = _db.TestCategoryList.Select(x => new TestCategoryDto()
+            {
+                Id = x.Id,
+                Name = x.Name,
+                ParentId = x.ParentId,
+                Position = x.Position,
+                Tests = new List<TestSummaryDto>()
+            }).ToList();
+
+            return res;
         }
 
         /// <returns>Id of just added category</returns>
         [HttpPost(nameof(CreateCategory))]
         public long CreateCategory(CreateCategoryCommand cmd)
         {
-            throw new NotImplementedException();
+            if (cmd == null)
+            {
+                return -1;
+            }
+
+            var category = new TestCategory()
+            {
+                Name = cmd.Name,
+                ParentId = cmd.ParentCategoryId
+            };
+
+            _db.TestCategoryList.Add(category);
+            _db.SaveChanges();
+
+            return category.Id;
         }
 
         [HttpPut(nameof(UpdateCategoryName))]
         public IActionResult UpdateCategoryName(long categoryId, [FromBody]string name)
         {
-            throw new NotImplementedException();
+            var category = _db.TestCategoryList.Find(categoryId);
+
+            if (category == null)
+            {
+               return BadRequest($"Test category with id={categoryId} not found");
+            }
+
+            category.Name = name;
+            _db.SaveChanges();
+
+            return Ok();
         }
 
         /// <summary>
@@ -46,15 +80,35 @@ namespace Stp.TestingApi.Controllers
         [HttpPut(nameof(MoveCategory))]
         public IActionResult MoveCategory(MoveCategoryCommand cmd)
         {
-            throw new NotImplementedException();
+            var category = _db.TestCategoryList.Find(cmd.CategoryId);
+
+            if (category == null)
+            {
+                return BadRequest($"Test category with id={cmd.CategoryId} not found");
+            }
+
+            category.Position = cmd.Position;
+            category.ParentId = cmd.ParentCategoryId;
+            _db.SaveChanges();
+
+            return Ok();
         }
 
         [HttpDelete(nameof(DeleteCategory))]
         public IActionResult DeleteCategory(long categoryId)
         {
             // TODO: forbid deletion if category contains at least one test
+            var category = _db.TestCategoryList.Find(categoryId);
 
-            throw new NotImplementedException();
+            if (category == null)
+            {
+                return BadRequest($"Test category with id={categoryId} not found");
+            }
+
+            category.IsDeleted = true;
+            _db.SaveChanges();
+
+            return NoContent();
         }
     }
 }

@@ -49,6 +49,7 @@ namespace Stp.TestingApi.Controllers
 
                     MultichoiceTaskInfo = new MultichoiceTaskInfoDto()
                     {
+                        Question = String.Empty,
                         Answers = x.MultichoiceAnswers.Select(a => new MultichoiceTaskAnswerDto()
                         {
                             Id = a.Id,
@@ -57,7 +58,11 @@ namespace Stp.TestingApi.Controllers
                         }).ToList()
                     },
 
-                    Skills = x.TaskAndSkills.Select(ts => new SkillDto() { Id = ts.Skill.Id, Name = ts.Skill.Name}).ToList(),
+                    Skills = x.TaskAndSkills.Select(ts => new SkillDto() 
+                    { 
+                        Id = ts.Skill.Id, 
+                        Name = ts.Skill.Name
+                    }).ToList(),
 
                     CodingTaskInfo = new CodingTaskInfoDto()
                 });     
