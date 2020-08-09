@@ -32,6 +32,8 @@ namespace Stp.TestingApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(); // Make sure you call this previous to AddMvc
+
             services.AddControllers();
 
             services.AddDbContext<TestingDbContext>(options =>
@@ -49,7 +51,7 @@ namespace Stp.TestingApi
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseCors(new Action<Microsoft.AspNetCore.Cors.Infrastructure.CorsPolicyBuilder>((x) => x.AllowAnyOrigin()));
+            app.UseCors(new Action<Microsoft.AspNetCore.Cors.Infrastructure.CorsPolicyBuilder>((x) => { x.AllowAnyOrigin(); x.AllowAnyMethod();x.AllowAnyHeader(); }));
 
             app.UseHttpsRedirection();
 

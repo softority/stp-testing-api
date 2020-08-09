@@ -35,7 +35,9 @@ namespace Stp.TestingApi.Controllers
                     Name = x.Name,
                     ParentId = x.ParentId,
                     Position = x.Position
-                }).ToList();
+                })
+                .OrderBy(x => x.Id) // TODO: OrderBy Position
+                .ToList();
 
             return res;
         }
@@ -46,7 +48,7 @@ namespace Stp.TestingApi.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public ActionResult<TaskCategoryDto> CreateCategory(CreateCategoryCommand cmd)
+        public ActionResult<TaskCategoryDto> CreateCategory([FromBody] CreateCategoryCommand cmd)
         {
             // TODO: Validation
             if (cmd.ParentCategoryId != null)
@@ -57,7 +59,9 @@ namespace Stp.TestingApi.Controllers
                     return BadRequest($"ParentCategoryId={cmd.ParentCategoryId} doesn't exist");
                 }
             }
-            var maxPos = _db.TaskCategoryList.Max(x => x.Position);
+
+            var maxPos = _db.TaskCategoryList.Max(x => (int?)x.Position) ?? 0;
+
             var newCategory = new TaskCategory()
             {
                 Name = cmd.Name,
@@ -78,7 +82,7 @@ namespace Stp.TestingApi.Controllers
                 });
         }
 
-        [HttpPut(nameof(UpdateCategoryName))]
+        [HttpPut("UpdateCategoryName/{categoryId}")] // TODO: <??>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -104,7 +108,7 @@ namespace Stp.TestingApi.Controllers
             throw new NotImplementedException();
         }
 
-        [HttpDelete(nameof(DeleteCategory))]
+        [HttpDelete("DeleteCategory/{categoryId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -119,6 +123,12 @@ namespace Stp.TestingApi.Controllers
             if (category == null)
             {
                 return NotFound($"Category with Id={categoryId} doesn't exist");
+            }
+
+            var hasChildren = _db.TaskCategoryList.Any(x => x.ParentId == category.Id);
+            if (hasChildren)
+            {
+                return BadRequest($"Deletion is forbidden. Category contains nested categories.");
             }
 
             if (category.Tasks.Count > 0)
