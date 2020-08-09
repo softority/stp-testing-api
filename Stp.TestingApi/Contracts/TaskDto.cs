@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Stp.Data.Entities;
+using Stp.Data.Enums;
 
 namespace Stp.TestingApi.Contracts
 {

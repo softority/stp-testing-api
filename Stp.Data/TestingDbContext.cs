@@ -31,6 +31,8 @@ namespace Stp.Data
         public DbSet<TaskCategory> TaskCategoryList { get; set; }
         public DbSet<StpTask> TaskList { get; set; }
         public DbSet<MultichoiceTaskAnswer> MultichoiceAnswerList { get; set; }
+        public DbSet<StpSkill> Skills { get; set; }
+        public DbSet<TaskAndSkill> TaskAndSkills { get; set; }
 
-}
+    }
 }

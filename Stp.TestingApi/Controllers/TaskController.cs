@@ -10,6 +10,7 @@ using Stp.Data;
 using Stp.Data.Entities;
 using Stp.TestingApi.Contracts;
 using Microsoft.EntityFrameworkCore;
+using Stp.Data.Enums;
 
 namespace Stp.TestingApi.Controllers
 {
@@ -38,9 +39,9 @@ namespace Stp.TestingApi.Controllers
                         Name = x.Name,
                         Type = x.Type,
                         Points = x.Points,
-                        Position = x.Position,
                         DurationMinutes = x.DurationMinutes,
                         Complexity = x.Complexity,
+                        Position = x.Position,
                         Skills = new List<string>()
                     },
 
@@ -141,7 +142,7 @@ namespace Stp.TestingApi.Controllers
 
         [HttpPut(nameof(UpdateTaskComplexity))]
         /* https://localhost:5001/api/Task/UpdateTaskComplexity */
-        public IActionResult UpdateTaskComplexity(long taskId, [FromBody] Data.Entities.TaskComplexity complexity)
+        public IActionResult UpdateTaskComplexity(long taskId, [FromBody] TaskComplexity complexity)
         {
             StpTask task = _db.TaskList.Find(taskId);
 
