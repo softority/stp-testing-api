@@ -25,6 +25,17 @@ namespace Stp.Data
             modelBuilder.Entity<TaskCategory>().HasQueryFilter(x => EF.Property<bool>(x, "IsDeleted") == false);
             modelBuilder.Entity<StpTask>().HasQueryFilter(x => EF.Property<bool>(x, "IsDeleted") == false);
             modelBuilder.Entity<MultichoiceTaskAnswer>().HasQueryFilter(x => EF.Property<bool>(x, "IsDeleted") == false);
+
+            modelBuilder.Entity<TaskAndSkill>()
+                .HasKey(ts => new { ts.TaskId, ts.SkillId });
+            modelBuilder.Entity<TaskAndSkill>()
+                .HasOne(t => t.Task)
+                .WithMany(ts => ts.TaskAndSkills)
+                .HasForeignKey(ts => ts.TaskId);
+            modelBuilder.Entity<TaskAndSkill>()
+                .HasOne(s => s.Skill)
+                .WithMany(ts => ts.TaskAndSkills)
+                .HasForeignKey(ts => ts.SkillId);
         }
 
         public DbSet<TestCategory> TestCategoryList { get; set; }

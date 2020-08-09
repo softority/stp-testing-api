@@ -10,5 +10,7 @@ namespace Stp.Data.Entities
     {
         public long Id { get; set; }
         public string Name { get; set; }
+
+        public virtual ICollection<TaskAndSkill> TaskAndSkills { get; set; }
     }
 }

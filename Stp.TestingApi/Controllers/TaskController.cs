@@ -26,14 +26,17 @@ namespace Stp.TestingApi.Controllers
 
         /* https://localhost:5001/api/Task/GetTasksByCategory */
         [HttpGet(nameof(GetTasksByCategory))]
-        public IEnumerable<Contracts.TaskDto> GetTasksByCategory(long taskCategoryId)
+        public IEnumerable<TaskDto> GetTasksByCategory(long taskCategoryId)
         {
+
             var res = _db.TaskList
                 .Where(x => x.CategoryId == taskCategoryId)
                 .Include(x => x.MultichoiceAnswers)
-                .Select(x => new Contracts.TaskDto()
+                .Include(x => x.TaskAndSkills)
+                .ThenInclude(x => x.Skill)
+                .Select(x => new TaskDto()
                 {
-                    TaskSummary = new Contracts.TaskSummaryDto()
+                    TaskSummary = new TaskSummaryDto()
                     {
                         Id = x.Id,
                         Name = x.Name,
@@ -41,13 +44,12 @@ namespace Stp.TestingApi.Controllers
                         Points = x.Points,
                         DurationMinutes = x.DurationMinutes,
                         Complexity = x.Complexity,
-                        Position = x.Position,
-                        Skills = new List<string>()
+                        Position = x.Position
                     },
 
-                    MultichoiceTaskInfo = new Contracts.MultichoiceTaskInfoDto()
+                    MultichoiceTaskInfo = new MultichoiceTaskInfoDto()
                     {
-                        Answers = x.MultichoiceAnswers.Select(a => new Contracts.MultichoiceTaskAnswerDto()
+                        Answers = x.MultichoiceAnswers.Select(a => new MultichoiceTaskAnswerDto()
                         {
                             Id = a.Id,
                             Name = a.Name,
@@ -55,15 +57,17 @@ namespace Stp.TestingApi.Controllers
                         }).ToList()
                     },
 
-                    CodingTaskInfo = new Contracts.CodingTaskInfoDto()
-                }); ;       
+                    Skills = x.TaskAndSkills.Select(ts => new SkillDto() { Id = ts.Skill.Id, Name = ts.Skill.Name}).ToList(),
+
+                    CodingTaskInfo = new CodingTaskInfoDto()
+                });     
 
             return res;
         }
 
         /* https://localhost:5001/api/Task/AddTask */
         [HttpPost(nameof(AddTask))]
-        public Contracts.TaskDto AddTask(long taskCategoryId, [FromBody] Contracts.TaskDto task)
+        public ActionResult<TaskDto> AddTask(long taskCategoryId, [FromBody] TaskDto task)
         {
 
             if (task.TaskSummary == null)
@@ -86,7 +90,7 @@ namespace Stp.TestingApi.Controllers
 
             task.TaskSummary.Id = newTask.Id;
 
-            return task;
+            return CreatedAtAction(nameof(AddTask), task);
         }
 
         [HttpPut(nameof(UpdateTaskName))]
@@ -188,7 +192,7 @@ namespace Stp.TestingApi.Controllers
             task.IsDeleted = true;
             _db.SaveChanges();
 
-            return Ok();
+            return NoContent();
         }
 
     }
