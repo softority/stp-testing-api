@@ -16,7 +16,6 @@ namespace Stp.TestingApi.Contracts
         public TaskSummaryDto TaskSummary { get; set; }
         public MultichoiceTaskInfoDto MultichoiceTaskInfo { get; set; }
         public CodingTaskInfoDto CodingTaskInfo { get; set; }
-        //public List<SkillDto> Skills { get; set; }
     }
 
     public class TaskSummaryDto

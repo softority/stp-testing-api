@@ -96,11 +96,13 @@ namespace Stp.TestingApi.Controllers
                 return NotFound($"Test category with id={cmd.CategoryId} and ParentId={cmd.ParentCategoryId} doesn't exist");
             }
 
+            var maxPosition = Math.Max(category.Position, cmd.Position);
+            var minPosition = Math.Min(category.Position, cmd.Position);
             category.Position = cmd.Position;
-            //var maxPosition = Math.Max(category.Position, cmd.Position);
-            //var minPosition = Math.Min(category.Position, cmd.Position);
-            //category.Position = cmd.Position;
-            //categories.Where(c => (c.Position >= minPosition && c.Position <= maxPosition && c.Id != category.Id)).ToList().ForEach(c => c.Position = minPosition++);
+            int shift = cmd.Position == minPosition ? 1 : -1;
+            categories.Where(c => (c.Position >= minPosition && c.Position <= maxPosition && c.Id != category.Id))
+                .ToList()
+                .ForEach(c => c.Position += shift);
 
             _db.SaveChanges();
 
