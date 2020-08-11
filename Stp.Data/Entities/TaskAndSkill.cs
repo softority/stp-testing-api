@@ -9,12 +9,12 @@ namespace Stp.Data.Entities
     public class TaskAndSkill
     {
         public long Id { get; set; }
-        [ForeignKey(nameof(StpTask))]
+        [ForeignKey(nameof(Task))]
         public long TaskId { get; set; }
-        [ForeignKey(nameof(StpSkill))]
+        [ForeignKey(nameof(Skill))]
         public long SkillId { get; set; }
 
         public virtual StpTask Task { get; set; }
-        public virtual StpSkill Skill { get; set; }
+        public virtual Skill Skill { get; set; }
     }
 }

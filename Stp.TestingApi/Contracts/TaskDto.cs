@@ -16,7 +16,7 @@ namespace Stp.TestingApi.Contracts
         public TaskSummaryDto TaskSummary { get; set; }
         public MultichoiceTaskInfoDto MultichoiceTaskInfo { get; set; }
         public CodingTaskInfoDto CodingTaskInfo { get; set; }
-        public List<SkillDto> Skills { get; set; }
+        //public List<SkillDto> Skills { get; set; }
     }
 
     public class TaskSummaryDto
@@ -28,6 +28,7 @@ namespace Stp.TestingApi.Contracts
         public int Position { get; set; }
         public int DurationMinutes { get; set; }        
         public TaskComplexity Complexity { get; set; }
+        public List<SkillDto> Skills { get; set; }
     }
     
 

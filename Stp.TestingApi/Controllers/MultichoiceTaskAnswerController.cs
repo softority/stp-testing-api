@@ -10,6 +10,7 @@ using Stp.Data;
 using Stp.Data.Entities;
 using Stp.TestingApi.Contracts;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Mime;
 
 namespace Stp.TestingApi.Controllers
 {
@@ -23,15 +24,18 @@ namespace Stp.TestingApi.Controllers
             _db = db;
         }
 
-        /* https://localhost:5001/api/MultichoiceTaskAnswer/AddTaskAnswer */
         [HttpPost(nameof(AddTaskAnswer))]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<MultichoiceTaskAnswerDto> AddTaskAnswer(long taskId, [FromBody]MultichoiceTaskAnswerDto answerDto)
         {
             StpTask task = _db.TaskList.Find(taskId);
 
             if(task == null)
             {
-                return null;
+                return NotFound($"Answer with id={taskId} doesn't exist");
             }
 
             MultichoiceTaskAnswer answer = new MultichoiceTaskAnswer()
@@ -49,15 +53,17 @@ namespace Stp.TestingApi.Controllers
             return CreatedAtAction(nameof(AddTaskAnswer), answerDto);
         }
 
-        /* https://localhost:5001/api/MultichoiceTaskAnswer/UpdateTaskAnswer */
         [HttpPut(nameof(UpdateTaskAnswer))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult UpdateTaskAnswer(long answerId, [FromBody]MultichoiceTaskAnswerDto answerDto)
         {
             MultichoiceTaskAnswer answer = _db.MultichoiceAnswerList.Find(answerId);
 
             if (answer == null)
             {
-                return BadRequest($"Answer with id={answerId} not found");
+                return NotFound($"Answer with id={answerId} doesn't exist");
             }
 
             answer.IsCorrect = answerDto.IsCorrect;
@@ -68,15 +74,17 @@ namespace Stp.TestingApi.Controllers
             return Ok();
         }
 
-        /* https://localhost:5001/api/MultichoiceTaskAnswer/DeleteTaskAnswer */
         [HttpDelete(nameof(DeleteTaskAnswer))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult DeleteTaskAnswer(long answerId)
         {
             MultichoiceTaskAnswer answer = _db.MultichoiceAnswerList.Find(answerId);
 
             if (answer == null)
             {
-                return BadRequest($"Answer with id={answerId} not found");
+                return NotFound($"Answer with id={answerId} doesn't exist");
             }
 
             answer.IsDeleted = true;

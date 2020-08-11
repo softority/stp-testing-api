@@ -6,7 +6,7 @@ using System.Text;
 namespace Stp.Data.Entities
 {
     [Table("Skill")]
-    public class StpSkill
+    public class Skill
     {
         public long Id { get; set; }
         public string Name { get; set; }

@@ -21,8 +21,8 @@ namespace Stp.TestingApi.Controllers
             _db = db;
         }
 
-        /* https://localhost:5001/api/TestCategory/GetCategories */
         [HttpGet(nameof(GetCategories))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public List<TestCategoryDto> GetCategories()
         {
             var res = _db.TestCategoryList.Select(x => new TestCategoryDto()
@@ -39,6 +39,8 @@ namespace Stp.TestingApi.Controllers
 
         /// <returns>Id of just added category</returns>
         [HttpPost(nameof(CreateCategory))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public long CreateCategory(CreateCategoryCommand cmd)
         {
             if (cmd == null)
@@ -59,13 +61,16 @@ namespace Stp.TestingApi.Controllers
         }
 
         [HttpPut(nameof(UpdateCategoryName))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult UpdateCategoryName(long categoryId, [FromBody]string name)
         {
             var category = _db.TestCategoryList.Find(categoryId);
 
             if (category == null)
             {
-               return BadRequest($"Test category with id={categoryId} not found");
+               return NotFound($"Test category with id={categoryId} doesn't exist");
             }
 
             category.Name = name;
@@ -78,23 +83,34 @@ namespace Stp.TestingApi.Controllers
         /// Changes position of the category in the tree
         /// </summary>
         [HttpPut(nameof(MoveCategory))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult MoveCategory(MoveCategoryCommand cmd)
         {
-            var category = _db.TestCategoryList.Find(cmd.CategoryId);
+            var categories = _db.TestCategoryList.Where(c => c.ParentId == cmd.ParentCategoryId).ToList().OrderBy(c => c.Position);
+            var category = categories.FirstOrDefault(c => c.Id == cmd.CategoryId);
 
             if (category == null)
             {
-                return BadRequest($"Test category with id={cmd.CategoryId} not found");
+                return NotFound($"Test category with id={cmd.CategoryId} and ParentId={cmd.ParentCategoryId} doesn't exist");
             }
 
             category.Position = cmd.Position;
-            category.ParentId = cmd.ParentCategoryId;
+            //var maxPosition = Math.Max(category.Position, cmd.Position);
+            //var minPosition = Math.Min(category.Position, cmd.Position);
+            //category.Position = cmd.Position;
+            //categories.Where(c => (c.Position >= minPosition && c.Position <= maxPosition && c.Id != category.Id)).ToList().ForEach(c => c.Position = minPosition++);
+
             _db.SaveChanges();
 
             return Ok();
         }
 
         [HttpDelete(nameof(DeleteCategory))]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult DeleteCategory(long categoryId)
         {
             // TODO: forbid deletion if category contains at least one test
@@ -102,7 +118,7 @@ namespace Stp.TestingApi.Controllers
 
             if (category == null)
             {
-                return BadRequest($"Test category with id={categoryId} not found");
+                return NotFound($"Test category with id={categoryId} doesn't exist");
             }
 
             category.IsDeleted = true;

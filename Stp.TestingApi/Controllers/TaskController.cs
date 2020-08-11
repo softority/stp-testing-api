@@ -11,6 +11,7 @@ using Stp.Data.Entities;
 using Stp.TestingApi.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Stp.Data.Enums;
+using System.Net.Mime;
 
 namespace Stp.TestingApi.Controllers
 {
@@ -24,11 +25,10 @@ namespace Stp.TestingApi.Controllers
             _db = db;
         }
 
-        /* https://localhost:5001/api/Task/GetTasksByCategory */
         [HttpGet(nameof(GetTasksByCategory))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IEnumerable<TaskDto> GetTasksByCategory(long taskCategoryId)
         {
-
             var res = _db.TaskList
                 .Where(x => x.CategoryId == taskCategoryId)
                 .Include(x => x.MultichoiceAnswers)
@@ -44,7 +44,12 @@ namespace Stp.TestingApi.Controllers
                         Points = x.Points,
                         DurationMinutes = x.DurationMinutes,
                         Complexity = x.Complexity,
-                        Position = x.Position
+                        Position = x.Position,
+                        Skills = x.TaskAndSkills.Select(ts => new SkillDto()
+                        {
+                            Id = ts.Skill.Id,
+                            Name = ts.Skill.Name
+                        }).ToList()
                     },
 
                     MultichoiceTaskInfo = new MultichoiceTaskInfoDto()
@@ -56,13 +61,7 @@ namespace Stp.TestingApi.Controllers
                             Name = a.Name,
                             IsCorrect = a.IsCorrect
                         }).ToList()
-                    },
-
-                    Skills = x.TaskAndSkills.Select(ts => new SkillDto() 
-                    { 
-                        Id = ts.Skill.Id, 
-                        Name = ts.Skill.Name
-                    }).ToList(),
+                    },                    
 
                     CodingTaskInfo = new CodingTaskInfoDto()
                 });     
@@ -70,14 +69,17 @@ namespace Stp.TestingApi.Controllers
             return res;
         }
 
-        /* https://localhost:5001/api/Task/AddTask */
         [HttpPost(nameof(AddTask))]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]        
         public ActionResult<TaskDto> AddTask(long taskCategoryId, [FromBody] TaskDto task)
         {
 
             if (task.TaskSummary == null)
             {
-                return null;
+                return BadRequest($"Invalid request body");
             }
 
             StpTask newTask = new StpTask() 
@@ -95,18 +97,20 @@ namespace Stp.TestingApi.Controllers
 
             task.TaskSummary.Id = newTask.Id;
 
-            return CreatedAtAction(nameof(AddTask), task);
+            return Created(nameof(AddTask), task);
         }
 
         [HttpPut(nameof(UpdateTaskName))]
-        /* https://localhost:5001/api/Task/UpdateTaskName */
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult UpdateTaskName(long taskId, [FromBody]string name)
         {
             StpTask task = _db.TaskList.Find(taskId);
 
             if (task == null)
             {
-                return BadRequest($"Task with id={taskId} not found");
+                return NotFound($"Task with id={taskId} doesn't exist");
             }
 
             task.Name = name;
@@ -116,14 +120,16 @@ namespace Stp.TestingApi.Controllers
         }
 
         [HttpPut(nameof(UpdateTaskDuration))]
-        /* https://localhost:5001/api/Task/UpdateTaskDuration */
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult UpdateTaskDuration(long taskId, [FromBody]int duration)
         {
             StpTask task = _db.TaskList.Find(taskId);
 
             if (task == null)
             {
-                return BadRequest($"Task with id={taskId} not found");
+                return NotFound($"Task with id={taskId} doesn't exist");
             }
 
             task.DurationMinutes = duration;
@@ -133,14 +139,16 @@ namespace Stp.TestingApi.Controllers
         }
 
         [HttpPut(nameof(UpdateTaskPoints))]
-        /* https://localhost:5001/api/Task/UpdateTaskPoints */
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult UpdateTaskPoints(long taskId, [FromBody]int points)
         {
             StpTask task = _db.TaskList.Find(taskId);
 
             if (task == null)
             {
-                return BadRequest($"Task with id={taskId} not found");
+                return NotFound($"Task with id={taskId} doesn't exist");
             }
 
             task.Points = points;
@@ -150,14 +158,16 @@ namespace Stp.TestingApi.Controllers
         }
 
         [HttpPut(nameof(UpdateTaskComplexity))]
-        /* https://localhost:5001/api/Task/UpdateTaskComplexity */
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult UpdateTaskComplexity(long taskId, [FromBody] TaskComplexity complexity)
         {
             StpTask task = _db.TaskList.Find(taskId);
 
             if (task == null)
             {
-                return BadRequest($"Task with id={taskId} not found");
+                return NotFound($"Task with id={taskId} doesn't exist");
             }
 
             task.Complexity = complexity;
@@ -167,14 +177,16 @@ namespace Stp.TestingApi.Controllers
         }
 
         [HttpPut(nameof(UpdateTaskDescription))]
-        /* https://localhost:5001/api/Task/UpdateTaskDescription */
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult UpdateTaskDescription(long taskId, [FromBody]string description)
         {
             StpTask task = _db.TaskList.Find(taskId);
 
             if (task == null)
             {
-                return BadRequest($"Task with id={taskId} not found");
+                return NotFound($"Task with id={taskId} doesn't exist");
             }
 
             task.Description = description;
@@ -184,14 +196,16 @@ namespace Stp.TestingApi.Controllers
         }
 
         [HttpDelete(nameof(DeleteTask))]
-        /* https://localhost:5001/api/Task/DeleteTask */
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult DeleteTask(long taskId)
         {
             StpTask task = _db.TaskList.Find(taskId);
 
             if (task == null)
             {
-                return BadRequest($"Task with id={taskId} not found");
+                return NotFound($"Task with id={taskId} doesn't exist");
             }
 
             task.IsDeleted = true;
