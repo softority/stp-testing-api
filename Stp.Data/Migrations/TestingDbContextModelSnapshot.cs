@@ -45,7 +45,7 @@ namespace Stp.Data.Migrations
                     b.ToTable("MultichoiceTaskAnswer");
                 });
 
-            modelBuilder.Entity("Stp.Data.Entities.StpSkill", b =>
+            modelBuilder.Entity("Stp.Data.Entities.Skill", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -198,8 +198,8 @@ namespace Stp.Data.Migrations
 
             modelBuilder.Entity("Stp.Data.Entities.TaskAndSkill", b =>
                 {
-                    b.HasOne("Stp.Data.Entities.StpSkill", "Skill")
-                        .WithMany()
+                    b.HasOne("Stp.Data.Entities.Skill", "Skill")
+                        .WithMany("TaskAndSkills")
                         .HasForeignKey("SkillId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

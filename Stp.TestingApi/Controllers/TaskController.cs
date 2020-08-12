@@ -12,10 +12,11 @@ using Stp.TestingApi.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Stp.Data.Enums;
 using System.Net.Mime;
+using Microsoft.AspNetCore.Mvc.Formatters;
 
 namespace Stp.TestingApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class TaskController : ControllerBase
     {
@@ -25,7 +26,8 @@ namespace Stp.TestingApi.Controllers
             _db = db;
         }
 
-        [HttpGet(nameof(GetTasksByCategory))]
+        // TODO: <??> Move taskCategoryId param to query string
+        [HttpGet("{taskCategoryId}")]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IEnumerable<TaskDto> GetTasksByCategory(long taskCategoryId)
         {
@@ -61,46 +63,64 @@ namespace Stp.TestingApi.Controllers
                             Name = a.Name,
                             IsCorrect = a.IsCorrect
                         }).ToList()
-                    },                    
+                    },
 
                     CodingTaskInfo = new CodingTaskInfoDto()
-                });     
-
+                }); ;     
+            
             return res;
         }
 
-        [HttpPost(nameof(AddTask))]
+        [HttpPost()]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]        
-        public ActionResult<TaskDto> AddTask(long taskCategoryId, [FromBody] TaskDto task)
+        public ActionResult<TaskDto> CreateTask([FromBody] CreateTaskCommand cmd)
         {
-
-            if (task.TaskSummary == null)
+            var category = _db.TaskCategoryList.Find(cmd.TaskCategoryId);
+            if (category == null) 
             {
-                return BadRequest($"Invalid request body");
+                return BadRequest($"Task category with Id={cmd.TaskCategoryId} not found");
             }
 
             StpTask newTask = new StpTask() 
             {
-                CategoryId = taskCategoryId,
-                Name = task.TaskSummary.Name,          
-                Points = task.TaskSummary.Points,
-                DurationMinutes = task.TaskSummary.DurationMinutes,
-                Type = task.TaskSummary.Type,
-                Complexity = task.TaskSummary.Complexity
+                CategoryId = category.Id,
+                Name = cmd.Name,          
+                Points = cmd.Points,
+                DurationMinutes = cmd.DurationMinutes,
+                Type = cmd.Type,
+                Complexity = cmd.Complexity
             };
 
             _db.TaskList.Add(newTask);
             _db.SaveChanges();
 
-            task.TaskSummary.Id = newTask.Id;
+            var result = new TaskDto()
+            {
+                TaskSummary = new TaskSummaryDto()
+                {
+                    Id = newTask.Id,
+                    Complexity = newTask.Complexity,
+                    DurationMinutes = newTask.DurationMinutes,
+                    Name = newTask.Name,
+                    Points = newTask.Points,
+                    Position = newTask.Position,
+                    Skills = new List<SkillDto>(),
+                    Type = newTask.Type
+                },
+                MultichoiceTaskInfo = new MultichoiceTaskInfoDto()
+                {
+                    Question = "",
+                    Answers = new List<MultichoiceTaskAnswerDto>()
+                }
+            };
 
-            return Created(nameof(AddTask), task);
+            return Created(nameof(CreateTask), result);
         }
 
-        [HttpPut(nameof(UpdateTaskName))]
+        [HttpPut("{taskId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -119,7 +139,7 @@ namespace Stp.TestingApi.Controllers
             return Ok();
         }
 
-        [HttpPut(nameof(UpdateTaskDuration))]
+        [HttpPut("{taskId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -138,7 +158,7 @@ namespace Stp.TestingApi.Controllers
             return Ok();
         }
 
-        [HttpPut(nameof(UpdateTaskPoints))]
+        [HttpPut("{taskId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -157,7 +177,7 @@ namespace Stp.TestingApi.Controllers
             return Ok();
         }
 
-        [HttpPut(nameof(UpdateTaskComplexity))]
+        [HttpPut("{taskId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -176,7 +196,7 @@ namespace Stp.TestingApi.Controllers
             return Ok();
         }
 
-        [HttpPut(nameof(UpdateTaskDescription))]
+        [HttpPut("{taskId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -195,7 +215,7 @@ namespace Stp.TestingApi.Controllers
             return Ok();
         }
 
-        [HttpDelete(nameof(DeleteTask))]
+        [HttpPut("{taskId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]

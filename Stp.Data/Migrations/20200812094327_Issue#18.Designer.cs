@@ -10,8 +10,8 @@ using Stp.Data;
 namespace Stp.Data.Migrations
 {
     [DbContext(typeof(TestingDbContext))]
-    [Migration("20200809043113_Issue#18-v1")]
-    partial class Issue18v1
+    [Migration("20200812094327_Issue#18")]
+    partial class Issue18
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -47,6 +47,21 @@ namespace Stp.Data.Migrations
                     b.ToTable("MultichoiceTaskAnswer");
                 });
 
+            modelBuilder.Entity("Stp.Data.Entities.Skill", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Skill");
+                });
+
             modelBuilder.Entity("Stp.Data.Entities.StpTask", b =>
                 {
                     b.Property<long>("Id")
@@ -78,6 +93,9 @@ namespace Stp.Data.Migrations
                     b.Property<int>("Points")
                         .HasColumnType("integer");
 
+                    b.Property<int>("Position")
+                        .HasColumnType("integer");
+
                     b.Property<int>("Type")
                         .HasColumnType("integer");
 
@@ -86,6 +104,28 @@ namespace Stp.Data.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Task");
+                });
+
+            modelBuilder.Entity("Stp.Data.Entities.TaskAndSkill", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<long>("SkillId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("TaskId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SkillId");
+
+                    b.HasIndex("TaskId");
+
+                    b.ToTable("TaskAndSkill");
                 });
 
             modelBuilder.Entity("Stp.Data.Entities.TaskCategory", b =>
@@ -154,6 +194,21 @@ namespace Stp.Data.Migrations
                     b.HasOne("Stp.Data.Entities.TaskCategory", "Category")
                         .WithMany("Tasks")
                         .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Stp.Data.Entities.TaskAndSkill", b =>
+                {
+                    b.HasOne("Stp.Data.Entities.Skill", "Skill")
+                        .WithMany("TaskAndSkills")
+                        .HasForeignKey("SkillId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Stp.Data.Entities.StpTask", "Task")
+                        .WithMany("TaskAndSkills")
+                        .HasForeignKey("TaskId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

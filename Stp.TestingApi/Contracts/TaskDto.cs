@@ -11,6 +11,16 @@ using Stp.Data.Enums;
 
 namespace Stp.TestingApi.Contracts
 {
+    public class CreateTaskCommand
+    {
+        public long TaskCategoryId { get; set; }
+        
+        public string Name { get; set; }
+        public int Points { get; set; }
+        public int DurationMinutes { get; set; }
+        public TaskType Type { get; set; }
+        public TaskComplexity Complexity { get; set; }        
+    }
     public class TaskDto
     {
         public TaskSummaryDto TaskSummary { get; set; }

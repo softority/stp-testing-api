@@ -3,16 +3,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Stp.Data.Migrations
 {
-    public partial class Issue18v2 : Migration
+    public partial class Issue18 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
-                name: "Position",
-                table: "Task",
-                nullable: false,
-                defaultValue: 0);
-
             migrationBuilder.CreateTable(
                 name: "Skill",
                 columns: table => new
@@ -70,10 +64,6 @@ namespace Stp.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Skill");
-
-            migrationBuilder.DropColumn(
-                name: "Position",
-                table: "Task");
         }
     }
 }
