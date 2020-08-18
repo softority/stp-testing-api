@@ -25,7 +25,7 @@ namespace Stp.TestingApi.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public List<TestCategoryDto> GetCategories()
         {
-            var res = _db.TestCategoryList.Select(x => new TestCategoryDto()
+            var res = _db.TestCategories.Select(x => new TestCategoryDto()
             {
                 Id = x.Id,
                 Name = x.Name,
@@ -54,7 +54,7 @@ namespace Stp.TestingApi.Controllers
                 ParentId = cmd.ParentCategoryId
             };
 
-            _db.TestCategoryList.Add(category);
+            _db.TestCategories.Add(category);
             _db.SaveChanges();
 
             return category.Id;
@@ -66,7 +66,7 @@ namespace Stp.TestingApi.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult UpdateCategoryName(long categoryId, [FromBody]string name)
         {
-            var category = _db.TestCategoryList.Find(categoryId);
+            var category = _db.TestCategories.Find(categoryId);
 
             if (category == null)
             {
@@ -88,7 +88,7 @@ namespace Stp.TestingApi.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult MoveCategory(MoveCategoryCommand cmd)
         {
-            var categories = _db.TestCategoryList.Where(c => c.ParentId == cmd.ParentCategoryId).ToList().OrderBy(c => c.Position);
+            var categories = _db.TestCategories.Where(c => c.ParentId == cmd.ParentCategoryId).ToList().OrderBy(c => c.Position);
             var category = categories.FirstOrDefault(c => c.Id == cmd.CategoryId);
 
             if (category == null)
@@ -116,7 +116,7 @@ namespace Stp.TestingApi.Controllers
         public IActionResult DeleteCategory(long categoryId)
         {
             // TODO: forbid deletion if category contains at least one test
-            var category = _db.TestCategoryList.Find(categoryId);
+            var category = _db.TestCategories.Find(categoryId);
 
             if (category == null)
             {

@@ -28,7 +28,7 @@ namespace Stp.TestingApi.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<List<TaskCategoryDto>> GetCategories()
         {
-            var res = _db.TaskCategoryList
+            var res = _db.TaskCategories
                 .Select(x => new TaskCategoryDto()
                 {
                     Id = x.Id,
@@ -53,14 +53,14 @@ namespace Stp.TestingApi.Controllers
             // TODO: Validation
             if (cmd.ParentCategoryId != null)
             {
-                var res = _db.TaskCategoryList.Find(cmd.ParentCategoryId.Value);
+                var res = _db.TaskCategories.Find(cmd.ParentCategoryId.Value);
                 if (res == null)
                 {
                     return BadRequest($"ParentCategoryId={cmd.ParentCategoryId} doesn't exist");
                 }
             }
 
-            var maxPos = _db.TaskCategoryList.Max(x => (int?)x.Position) ?? 0;
+            var maxPos = _db.TaskCategories.Max(x => (int?)x.Position) ?? 0;
 
             var newCategory = new TaskCategory()
             {
@@ -68,7 +68,7 @@ namespace Stp.TestingApi.Controllers
                 ParentId = cmd.ParentCategoryId,
                 Position = maxPos > 0 ? ++maxPos : 0
             };
-            _db.TaskCategoryList.Add(newCategory);
+            _db.TaskCategories.Add(newCategory);
             _db.SaveChanges();
 
             return CreatedAtAction(
@@ -88,7 +88,7 @@ namespace Stp.TestingApi.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult UpdateCategoryName(long categoryId, [FromBody] string name)
         {
-            var category = _db.TaskCategoryList.Find(categoryId);
+            var category = _db.TaskCategories.Find(categoryId);
             if (category == null)
             {
                 return NotFound($"Category with Id={categoryId} doesn't exist");
@@ -116,7 +116,7 @@ namespace Stp.TestingApi.Controllers
         public IActionResult DeleteCategory(long categoryId)
         {
             // TODO: forbid deletion if category contains at least one test
-            var category = _db.TaskCategoryList
+            var category = _db.TaskCategories
                 .Include(x => x.Tasks)
                 .FirstOrDefault(x => x.Id == categoryId);
 
@@ -125,7 +125,7 @@ namespace Stp.TestingApi.Controllers
                 return NotFound($"Category with Id={categoryId} doesn't exist");
             }
 
-            var hasChildren = _db.TaskCategoryList.Any(x => x.ParentId == category.Id);
+            var hasChildren = _db.TaskCategories.Any(x => x.ParentId == category.Id);
             if (hasChildren)
             {
                 return BadRequest($"Deletion is forbidden. Category contains nested categories.");
@@ -136,7 +136,7 @@ namespace Stp.TestingApi.Controllers
                 return BadRequest($"Deletion is forbidden. Category contains tasks.");
             }
 
-            _db.TaskCategoryList.Remove(category);
+            _db.TaskCategories.Remove(category);
             _db.SaveChanges();
 
             return NoContent();

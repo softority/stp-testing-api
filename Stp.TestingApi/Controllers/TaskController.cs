@@ -31,7 +31,7 @@ namespace Stp.TestingApi.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IEnumerable<TaskDto> GetTasksByCategory(long taskCategoryId)
         {
-            var res = _db.TaskList
+            var res = _db.Tasks
                 .Where(x => x.CategoryId == taskCategoryId)
                 .Include(x => x.MultichoiceAnswers)
                 .Include(x => x.TaskAndSkills)
@@ -78,7 +78,7 @@ namespace Stp.TestingApi.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]        
         public ActionResult<TaskDto> CreateTask([FromBody] CreateTaskCommand cmd)
         {
-            var category = _db.TaskCategoryList.Find(cmd.TaskCategoryId);
+            var category = _db.TaskCategories.Find(cmd.TaskCategoryId);
             if (category == null) 
             {
                 return BadRequest($"Task category with Id={cmd.TaskCategoryId} not found");
@@ -94,7 +94,7 @@ namespace Stp.TestingApi.Controllers
                 Complexity = cmd.Complexity
             };
 
-            _db.TaskList.Add(newTask);
+            _db.Tasks.Add(newTask);
             _db.SaveChanges();
 
             var result = new TaskDto()
@@ -126,7 +126,7 @@ namespace Stp.TestingApi.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult UpdateTaskName(long taskId, [FromBody]string name)
         {
-            StpTask task = _db.TaskList.Find(taskId);
+            StpTask task = _db.Tasks.Find(taskId);
 
             if (task == null)
             {
@@ -145,7 +145,7 @@ namespace Stp.TestingApi.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult UpdateTaskDuration(long taskId, [FromBody]int duration)
         {
-            StpTask task = _db.TaskList.Find(taskId);
+            StpTask task = _db.Tasks.Find(taskId);
 
             if (task == null)
             {
@@ -164,7 +164,7 @@ namespace Stp.TestingApi.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult UpdateTaskPoints(long taskId, [FromBody]int points)
         {
-            StpTask task = _db.TaskList.Find(taskId);
+            StpTask task = _db.Tasks.Find(taskId);
 
             if (task == null)
             {
@@ -181,9 +181,40 @@ namespace Stp.TestingApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult UpdateTaskPosition(long taskId, [FromBody] int position)
+        {
+            StpTask task = _db.Tasks.Find(taskId);
+
+            if (task == null)
+            {
+                return NotFound($"Task with id={taskId} doesn't exist");
+            }
+
+            var tasks = _db.Tasks.Where(x => x.CategoryId == task.CategoryId).ToList();
+
+            var maxPosition = Math.Max(task.Position, position);
+            var minPosition = Math.Min(task.Position, position);
+
+            task.Position = position;
+
+            int shift = position == minPosition ? 1 : -1;
+            _db.Tasks
+                .Where(x => (x.CategoryId == task.CategoryId && x.Position >= minPosition && x.Position <= maxPosition))
+                .ToList()
+                .ForEach(c => c.Position += shift);
+
+            _db.SaveChanges();
+
+            return Ok();
+        }
+
+        [HttpPut("{taskId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult UpdateTaskComplexity(long taskId, [FromBody] TaskComplexity complexity)
         {
-            StpTask task = _db.TaskList.Find(taskId);
+            StpTask task = _db.Tasks.Find(taskId);
 
             if (task == null)
             {
@@ -202,7 +233,7 @@ namespace Stp.TestingApi.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult UpdateTaskDescription(long taskId, [FromBody]string description)
         {
-            StpTask task = _db.TaskList.Find(taskId);
+            StpTask task = _db.Tasks.Find(taskId);
 
             if (task == null)
             {
@@ -221,7 +252,7 @@ namespace Stp.TestingApi.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult DeleteTask(long taskId)
         {
-            StpTask task = _db.TaskList.Find(taskId);
+            StpTask task = _db.Tasks.Find(taskId);
 
             if (task == null)
             {

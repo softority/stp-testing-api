@@ -31,7 +31,7 @@ namespace Stp.TestingApi.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<MultichoiceTaskAnswerDto> AddTaskAnswer(long taskId, [FromBody]MultichoiceTaskAnswerDto answerDto)
         {
-            StpTask task = _db.TaskList.Find(taskId);
+            StpTask task = _db.Tasks.Find(taskId);
 
             if(task == null)
             {
@@ -45,7 +45,7 @@ namespace Stp.TestingApi.Controllers
                 TaskId = taskId
             };
 
-            _db.MultichoiceAnswerList.Add(answer);
+            _db.MultichoiceTaskAnswers.Add(answer);
             _db.SaveChanges();
 
             answerDto.Id = answer.Id;
@@ -59,7 +59,7 @@ namespace Stp.TestingApi.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult UpdateTaskAnswer(long answerId, [FromBody]MultichoiceTaskAnswerDto answerDto)
         {
-            MultichoiceTaskAnswer answer = _db.MultichoiceAnswerList.Find(answerId);
+            MultichoiceTaskAnswer answer = _db.MultichoiceTaskAnswers.Find(answerId);
 
             if (answer == null)
             {
@@ -80,7 +80,7 @@ namespace Stp.TestingApi.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult DeleteTaskAnswer(long answerId)
         {
-            MultichoiceTaskAnswer answer = _db.MultichoiceAnswerList.Find(answerId);
+            MultichoiceTaskAnswer answer = _db.MultichoiceTaskAnswers.Find(answerId);
 
             if (answer == null)
             {
