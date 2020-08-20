@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Stp.Data.Enums;
 using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using System.Security.Cryptography;
 
 namespace Stp.TestingApi.Controllers
 {
@@ -35,7 +36,7 @@ namespace Stp.TestingApi.Controllers
                 .Where(x => x.CategoryId == taskCategoryId)
                 .Include(x => x.MultichoiceAnswers)
                 .Include(x => x.TaskAndSkills)
-                .ThenInclude(x => x.Skill)
+                    .ThenInclude(x => x.Skill)
                 .Select(x => new TaskDto()
                 {
                     TaskSummary = new TaskSummaryDto()
@@ -84,6 +85,11 @@ namespace Stp.TestingApi.Controllers
                 return BadRequest($"Task category with Id={cmd.TaskCategoryId} not found");
             }
 
+            var skillIds = cmd.Skills.Select(y => y.Id).ToList();
+            var existingSkills = _db.Skills.Where(x => skillIds.Contains(x.Id)).ToList();
+
+            using var trn = _db.Database.BeginTransaction();
+
             StpTask newTask = new StpTask() 
             {
                 CategoryId = category.Id,
@@ -93,9 +99,50 @@ namespace Stp.TestingApi.Controllers
                 Type = cmd.Type,
                 Complexity = cmd.Complexity
             };
-
             _db.Tasks.Add(newTask);
+
+            newTask.TaskAndSkills = new List<TaskAndSkill>();
+
+            foreach (var skill in cmd.Skills)
+            {
+                if (skill.State != SkillState.Added && skill.State != SkillState.New)
+                {
+                    return BadRequest($"Unexpected SkillState: {skill.State}");
+                }
+
+                Skill skillToAdd = null;
+                if (skill.State == SkillState.New)
+                {
+                    skillToAdd = new Skill()
+                    {
+                        Name = skill.Name
+                    };
+                    _db.Skills.Add(skillToAdd);
+                    _db.SaveChanges();
+                }
+                else
+                {
+                    var dbSkill = existingSkills.Find(x => x.Id == skill.Id);
+                    if (dbSkill == null)
+                    {
+                        return BadRequest($"Skill with Id={skill.Id} not found");
+                    }
+                    skillToAdd = dbSkill;
+                }
+
+                
+                TaskAndSkill link = new TaskAndSkill()
+                {
+                    SkillId = skillToAdd.Id,
+                    //TaskId = newTask.Id
+                };
+                newTask.TaskAndSkills.Add(link);
+
+                //_db.TaskAndSkills.Add(link);
+            }
+
             _db.SaveChanges();
+            trn.Commit();
 
             var result = new TaskDto()
             {
@@ -106,9 +153,9 @@ namespace Stp.TestingApi.Controllers
                     DurationMinutes = newTask.DurationMinutes,
                     Name = newTask.Name,
                     Points = newTask.Points,
-                    Position = newTask.Position,
-                    Skills = new List<SkillDto>(),
-                    Type = newTask.Type
+                    Position = newTask.Position,                    
+                    Type = newTask.Type,
+                    Skills = newTask.TaskAndSkills.Select(x => new SkillDto() { Id = x.Skill.Id, Name = x.Skill.Name }).ToList(),
                 },
                 MultichoiceTaskInfo = new MultichoiceTaskInfoDto()
                 {
@@ -245,6 +292,79 @@ namespace Stp.TestingApi.Controllers
 
             return Ok();
         }
+
+        [HttpPut("{taskId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public ActionResult<List<SkillDto>> UpdateSkills(long taskId, [FromBody] List<SkillStateDto> skills)
+        {
+            StpTask task = _db.Tasks.Find(taskId);
+
+            if (task == null)
+            {
+                return NotFound($"Task with id={taskId} doesn't exist");
+            }
+
+            var dbSkills = _db.TaskAndSkills.Where(x => x.TaskId == taskId).ToList();
+            foreach (var skill in skills)
+            {
+                var st = skill.State;
+
+                
+                if (skill.State == SkillState.New)
+                {
+                    var skillToAdd = new Skill()
+                    {
+                        Name = skill.Name
+                    };
+                    _db.Skills.Add(skillToAdd);
+                }
+
+                TaskAndSkill newLink;
+                switch (skill.State)
+                {
+                    case SkillState.Added:
+                        newLink = new TaskAndSkill()
+                        {
+                            TaskId = task.Id,
+                            SkillId = skill.Id.Value
+                        };
+                        task.TaskAndSkills.Add(newLink);
+                        break;
+                    case SkillState.Removed:
+                        var skillToRemove = dbSkills.Find(x => x.SkillId == skill.Id);
+                        task.TaskAndSkills.Remove(skillToRemove);
+                        break;
+                    case SkillState.New:
+                        var skillToAdd = new Skill()
+                        {
+                            Name = skill.Name
+                        };                        
+                        _db.Skills.Add(skillToAdd);
+
+                        newLink = new TaskAndSkill()
+                        {
+                            TaskId = task.Id,
+                            SkillId = skillToAdd.Id
+                        };
+                        task.TaskAndSkills.Add(newLink);
+                        break;
+                    default:
+                        return BadRequest($"Unexpected SkillState: {skill.State}");
+                }
+            }
+            _db.SaveChanges();
+
+            var res = task.TaskAndSkills.Select(ts => new SkillDto()
+            {
+                Id = ts.Skill.Id,
+                Name = ts.Skill.Name
+            }).ToList();
+
+            return res;
+        }
+
 
         [HttpPut("{taskId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]

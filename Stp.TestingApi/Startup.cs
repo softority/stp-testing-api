@@ -37,7 +37,7 @@ namespace Stp.TestingApi
             services.AddControllers();
 
             services.AddDbContext<TestingDbContext>(options =>
-                options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
+                options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"), (opt) => opt.CommandTimeout(10)));
                 services.AddControllers();
                 services.AddOpenApiDocument(document =>
                     document.PostProcess = d => d.Info.Title = "STP API");
