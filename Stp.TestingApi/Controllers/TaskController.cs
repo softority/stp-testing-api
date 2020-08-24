@@ -246,7 +246,7 @@ namespace Stp.TestingApi.Controllers
             return Ok();
         }
 
-        [HttpPut("{taskId}")]
+        [HttpDelete("{taskId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]

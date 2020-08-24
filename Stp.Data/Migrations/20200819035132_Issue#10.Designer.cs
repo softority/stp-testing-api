@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Stp.Data;
@@ -9,9 +10,10 @@ using Stp.Data;
 namespace Stp.Data.Migrations
 {
     [DbContext(typeof(TestingDbContext))]
-    partial class TestingDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200819035132_Issue#10")]
+    partial class Issue10
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -185,9 +187,6 @@ namespace Stp.Data.Migrations
                         .HasColumnType("bigint")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
@@ -200,31 +199,6 @@ namespace Stp.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("TestSections");
-                });
-
-            modelBuilder.Entity("Stp.Data.Entities.TestSectionAndTask", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<long>("TaskId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("TaskPosition")
-                        .HasColumnType("integer");
-
-                    b.Property<long>("TestSectionId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TaskId");
-
-                    b.HasIndex("TestSectionId");
-
-                    b.ToTable("TestSectionAndTasks");
                 });
 
             modelBuilder.Entity("Stp.Data.Entities.MultichoiceTaskAnswer", b =>
@@ -272,21 +246,6 @@ namespace Stp.Data.Migrations
                     b.HasOne("Stp.Data.Entities.TestCategory", "Parent")
                         .WithMany()
                         .HasForeignKey("ParentId");
-                });
-
-            modelBuilder.Entity("Stp.Data.Entities.TestSectionAndTask", b =>
-                {
-                    b.HasOne("Stp.Data.Entities.StpTask", "Task")
-                        .WithMany()
-                        .HasForeignKey("TaskId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Stp.Data.Entities.TestSection", "TestSection")
-                        .WithMany("TestSectionsAndTasks")
-                        .HasForeignKey("TestSectionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }
