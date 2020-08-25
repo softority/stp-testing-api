@@ -29,6 +29,7 @@ namespace Stp.Data
             modelBuilder.Entity<Skill>().HasIndex((x) => x.Name).IsUnique();
             ;
             modelBuilder.Entity<TaskAndSkill>().HasIndex((x) => new { x.TaskId, x.SkillId}).IsUnique();
+            modelBuilder.Entity<TestSection>().HasQueryFilter(x => EF.Property<bool>(x, "IsDeleted") == false);            
         }
 
         public DbSet<TestCategory> TestCategories { get; set; }
@@ -37,6 +38,8 @@ namespace Stp.Data
         public DbSet<MultichoiceTaskAnswer> MultichoiceTaskAnswers { get; set; }
         public DbSet<Skill> Skills { get; set; }
         public DbSet<TaskAndSkill> TaskAndSkills { get; set; }
+        public DbSet<TestSection> TestSections { get; set; }
+        public DbSet<TestSectionAndTask> TestSectionAndTasks { get; set; }
 
     }
 }
