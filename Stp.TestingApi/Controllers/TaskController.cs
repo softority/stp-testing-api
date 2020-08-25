@@ -67,8 +67,8 @@ namespace Stp.TestingApi.Controllers
                     },
 
                     CodingTaskInfo = new CodingTaskInfoDto()
-                }); ;     
-            
+                }); ;
+
             return res;
         }
 
@@ -76,11 +76,11 @@ namespace Stp.TestingApi.Controllers
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]        
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<TaskDto> CreateTask([FromBody] CreateTaskCommand cmd)
         {
             var category = _db.TaskCategories.Find(cmd.TaskCategoryId);
-            if (category == null) 
+            if (category == null)
             {
                 return BadRequest($"Task category with Id={cmd.TaskCategoryId} not found");
             }
@@ -90,10 +90,10 @@ namespace Stp.TestingApi.Controllers
 
             using var trn = _db.Database.BeginTransaction();
 
-            StpTask newTask = new StpTask() 
+            StpTask newTask = new StpTask()
             {
                 CategoryId = category.Id,
-                Name = cmd.Name,          
+                Name = cmd.Name,
                 Points = cmd.Points,
                 DurationMinutes = cmd.DurationMinutes,
                 Type = cmd.Type,
@@ -130,7 +130,7 @@ namespace Stp.TestingApi.Controllers
                     skillToAdd = dbSkill;
                 }
 
-                
+
                 TaskAndSkill link = new TaskAndSkill()
                 {
                     SkillId = skillToAdd.Id,
@@ -153,7 +153,7 @@ namespace Stp.TestingApi.Controllers
                     DurationMinutes = newTask.DurationMinutes,
                     Name = newTask.Name,
                     Points = newTask.Points,
-                    Position = newTask.Position,                    
+                    Position = newTask.Position,
                     Type = newTask.Type,
                     Skills = newTask.TaskAndSkills.Select(x => new SkillDto() { Id = x.Skill.Id, Name = x.Skill.Name }).ToList(),
                 },
@@ -171,7 +171,7 @@ namespace Stp.TestingApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult UpdateTaskName(long taskId, [FromBody]string name)
+        public IActionResult UpdateTaskName(long taskId, [FromBody] string name)
         {
             StpTask task = _db.Tasks.Find(taskId);
 
@@ -190,7 +190,7 @@ namespace Stp.TestingApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult UpdateTaskDuration(long taskId, [FromBody]int duration)
+        public IActionResult UpdateTaskDuration(long taskId, [FromBody] int duration)
         {
             StpTask task = _db.Tasks.Find(taskId);
 
@@ -209,7 +209,7 @@ namespace Stp.TestingApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult UpdateTaskPoints(long taskId, [FromBody]int points)
+        public IActionResult UpdateTaskPoints(long taskId, [FromBody] int points)
         {
             StpTask task = _db.Tasks.Find(taskId);
 
@@ -278,7 +278,7 @@ namespace Stp.TestingApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult UpdateTaskDescription(long taskId, [FromBody]string description)
+        public IActionResult UpdateTaskDescription(long taskId, [FromBody] string description)
         {
             StpTask task = _db.Tasks.Find(taskId);
 
@@ -299,49 +299,59 @@ namespace Stp.TestingApi.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<List<SkillDto>> UpdateSkills(long taskId, [FromBody] List<SkillStateDto> skills)
         {
-            StpTask task = _db.Tasks.Find(taskId);
+            //return BadRequest($"Failed to add the skill. The task already contains it.");
+
+            //StpTask task = _db.Tasks.Find(taskId);
+            StpTask task = _db.Tasks
+                .Include(x => x.TaskAndSkills)
+                .Where(x => x.Id == taskId)
+                .FirstOrDefault();
 
             if (task == null)
             {
                 return NotFound($"Task with id={taskId} doesn't exist");
             }
 
-            var dbSkills = _db.TaskAndSkills.Where(x => x.TaskId == taskId).ToList();
+            //var dbSkills = task.TaskAndSkills;
+            ////.Include(x => x.Skill)
+            //.Where(x => x.TaskId == taskId)
+            //.ToList();
+            using var trn = _db.Database.BeginTransaction();
+
             foreach (var skill in skills)
             {
                 var st = skill.State;
-
-                
-                if (skill.State == SkillState.New)
-                {
-                    var skillToAdd = new Skill()
-                    {
-                        Name = skill.Name
-                    };
-                    _db.Skills.Add(skillToAdd);
-                }
 
                 TaskAndSkill newLink;
                 switch (skill.State)
                 {
                     case SkillState.Added:
+
+                        var duplicate = task.TaskAndSkills.FirstOrDefault(x => x.SkillId == skill.Id);
+                        if (duplicate != null)
+                        {
+                            return BadRequest($"Failed to add the skill '{skill.Name}'. The task already contains it.");
+                        }
                         newLink = new TaskAndSkill()
                         {
                             TaskId = task.Id,
                             SkillId = skill.Id.Value
                         };
                         task.TaskAndSkills.Add(newLink);
+
                         break;
                     case SkillState.Removed:
-                        var skillToRemove = dbSkills.Find(x => x.SkillId == skill.Id);
+                        var skillToRemove = task.TaskAndSkills.FirstOrDefault(x => x.SkillId == skill.Id);
                         task.TaskAndSkills.Remove(skillToRemove);
                         break;
                     case SkillState.New:
+                        // TODO: add unique name check
                         var skillToAdd = new Skill()
                         {
                             Name = skill.Name
-                        };                        
+                        };
                         _db.Skills.Add(skillToAdd);
+                        _db.SaveChanges();
 
                         newLink = new TaskAndSkill()
                         {
@@ -355,12 +365,15 @@ namespace Stp.TestingApi.Controllers
                 }
             }
             _db.SaveChanges();
+            trn.Commit();
 
-            var res = task.TaskAndSkills.Select(ts => new SkillDto()
-            {
-                Id = ts.Skill.Id,
-                Name = ts.Skill.Name
-            }).ToList();
+            var res = _db.TaskAndSkills
+                .Where(x => x.TaskId == task.Id)
+                .Select(ts => new SkillDto()
+                {
+                    Id = ts.Skill.Id,
+                    Name = ts.Skill.Name
+                }).ToList();
 
             return res;
         }
