@@ -87,7 +87,15 @@ namespace Stp.TestingApi.Controllers
 
             var skillIds = cmd.Skills.Select(y => y.Id).ToList();
             var existingSkills = _db.Skills.Where(x => skillIds.Contains(x.Id)).ToList();
-
+            var maxPos = _db.Tasks.Where(x => x.CategoryId == category.Id).Max(x => (int?)x.Position);
+            if (maxPos == null)
+            {
+                maxPos = 0;
+            }
+            else
+            {
+                ++maxPos;
+            }
             using var trn = _db.Database.BeginTransaction();
 
             StpTask newTask = new StpTask()
@@ -97,6 +105,7 @@ namespace Stp.TestingApi.Controllers
                 Points = cmd.Points,
                 DurationMinutes = cmd.DurationMinutes,
                 Type = cmd.Type,
+                Position = maxPos.Value,
                 Complexity = cmd.Complexity
             };
             _db.Tasks.Add(newTask);
