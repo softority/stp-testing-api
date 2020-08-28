@@ -12,4 +12,11 @@ namespace Stp.TestingApi.Contracts
         public string Name { get; set; }
         public bool IsCorrect { get; set; }
     }
+
+    public class AddTaskAnswerCommand
+    {
+        public long TaskId { get; set; }
+        public string Name { get; set; }
+        public bool IsCorrect { get; set; }
+    }
 }

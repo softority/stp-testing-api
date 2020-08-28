@@ -14,7 +14,7 @@ using System.Net.Mime;
 
 namespace Stp.TestingApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class MultichoiceTaskAnswerController : ControllerBase
     {
@@ -24,46 +24,51 @@ namespace Stp.TestingApi.Controllers
             _db = db;
         }
 
-        [HttpPost(nameof(AddTaskAnswer))]
+        [HttpPost]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public ActionResult<MultichoiceTaskAnswerDto> AddTaskAnswer(long taskId, [FromBody]MultichoiceTaskAnswerDto answerDto)
+        public ActionResult<MultichoiceTaskAnswerDto> AddTaskAnswer([FromBody] AddTaskAnswerCommand cmd)
         {
-            StpTask task = _db.Tasks.Find(taskId);
+            StpTask task = _db.Tasks.Find(cmd.TaskId);
 
             if(task == null)
             {
-                return NotFound($"Answer with id={taskId} doesn't exist");
+                return NotFound($"Answer with id={cmd.TaskId} doesn't exist");
             }
 
             MultichoiceTaskAnswer answer = new MultichoiceTaskAnswer()
             {
-                Name = answerDto.Name,
-                IsCorrect = answerDto.IsCorrect,
-                TaskId = taskId
+                Name = cmd.Name,
+                IsCorrect = cmd.IsCorrect,
+                TaskId = cmd.TaskId
             };
 
             _db.MultichoiceTaskAnswers.Add(answer);
             _db.SaveChanges();
 
-            answerDto.Id = answer.Id;
+            var res = new MultichoiceTaskAnswerDto()
+            {
+                Id = answer.Id,
+                Name = answer.Name,
+                IsCorrect = answer.IsCorrect
+            };
 
-            return CreatedAtAction(nameof(AddTaskAnswer), answerDto);
+            return CreatedAtAction(nameof(AddTaskAnswer), res);
         }
 
-        [HttpPut(nameof(UpdateTaskAnswer))]
+        [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult UpdateTaskAnswer(long answerId, [FromBody]MultichoiceTaskAnswerDto answerDto)
+        public IActionResult UpdateTaskAnswer([FromBody]MultichoiceTaskAnswerDto answerDto)
         {
-            MultichoiceTaskAnswer answer = _db.MultichoiceTaskAnswers.Find(answerId);
+            MultichoiceTaskAnswer answer = _db.MultichoiceTaskAnswers.Find(answerDto.Id);
 
             if (answer == null)
             {
-                return NotFound($"Answer with id={answerId} doesn't exist");
+                return NotFound($"Answer with id={answerDto.Id} doesn't exist");
             }
 
             answer.IsCorrect = answerDto.IsCorrect;
@@ -74,7 +79,7 @@ namespace Stp.TestingApi.Controllers
             return Ok();
         }
 
-        [HttpDelete(nameof(DeleteTaskAnswer))]
+        [HttpDelete("{answerId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
