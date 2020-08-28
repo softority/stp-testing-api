@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace Stp.Data.Entities
 {
-
+    [Table(nameof(TestSection))]
     public class TestSection
     {
         public long Id { get; set; }

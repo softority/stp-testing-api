@@ -53,6 +53,7 @@ namespace Stp.TestingApi.Controllers
         [HttpPut("{sectionId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult UpdateSectionPosition(long sectionId, [FromBody]int newPosition)
         {
@@ -68,6 +69,11 @@ namespace Stp.TestingApi.Controllers
             if (sections.Count() == 0)
             {
                 return NotFound($"TestSection with id={sectionId} and TestId={section.TestId} doesn't exist");
+            }
+
+            if (newPosition > sections.Max(s => s.Position) || newPosition < sections.Min(s => s.Position))
+            {
+                return BadRequest($"New position newPosition={newPosition} is out of positions range");
             }
 
             var maxPosition = Math.Max(section.Position, newPosition);
@@ -97,8 +103,6 @@ namespace Stp.TestingApi.Controllers
             {
                 return NotFound($"TestSection with id={sectionId} doesn't exist");
             }
-
-            //_db.Entry(section).Reference(s => s.TestSectionsAndTasks).Load();
 
             StpTask task = _db.Tasks.Find(taskId);
 
