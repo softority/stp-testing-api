@@ -41,11 +41,18 @@ namespace Stp.TestingApi.Controllers
         [HttpPost(nameof(CreateCategory))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public long CreateCategory(CreateCategoryCommand cmd)
+        public ActionResult<long> CreateCategory(CreateCategoryCommand cmd)
         {
             if (cmd == null)
             {
-                return -1;
+                return BadRequest("Incorrect command sent");
+            }
+
+            var parentCategory = _db.TestCategories.Find(cmd.ParentCategoryId);
+
+            if(parentCategory == null)
+            {
+                return BadRequest($"Parent test category with id={cmd.ParentCategoryId} doesn't exist");
             }
 
             var category = new TestCategory()
@@ -88,7 +95,20 @@ namespace Stp.TestingApi.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult MoveCategory(MoveCategoryCommand cmd)
         {
+            var parentCategory = _db.TestCategories.Find(cmd.ParentCategoryId);
+
+            if (parentCategory == null)
+            {
+                return BadRequest($"Parent test category with id={cmd.ParentCategoryId} doesn't exist");
+            }
+
             var categories = _db.TestCategories.Where(c => c.ParentId == cmd.ParentCategoryId).ToList().OrderBy(c => c.Position);
+
+            if (categories.Count() < 2)
+            {
+                return BadRequest($"Parent test category with id={cmd.ParentCategoryId} contain less then 2 nodes");
+            }
+
             var category = categories.FirstOrDefault(c => c.Id == cmd.CategoryId);
 
             if (category == null)

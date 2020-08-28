@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Stp.Data.Entities
 {
+    [Table(nameof(TestSectionAndTask))]
     public class TestSectionAndTask
     {
         public long Id { get; set; }
