@@ -60,13 +60,20 @@ namespace Stp.TestingApi.Controllers
                 }
             }
 
-            var maxPos = _db.TaskCategories.Max(x => (int?)x.Position) ?? 0;
-
+            var maxPos = _db.TaskCategories.Max(x => (int?)x.Position);
+            if (maxPos == null)
+            {
+                maxPos = 0;
+            }
+            else
+            {
+                ++maxPos;
+            }
             var newCategory = new TaskCategory()
             {
                 Name = cmd.Name,
                 ParentId = cmd.ParentCategoryId,
-                Position = maxPos > 0 ? ++maxPos : 0
+                Position = maxPos.Value
             };
             _db.TaskCategories.Add(newCategory);
             _db.SaveChanges();

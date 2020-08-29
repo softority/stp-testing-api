@@ -25,6 +25,10 @@ namespace Stp.Data
             modelBuilder.Entity<TaskCategory>().HasQueryFilter(x => EF.Property<bool>(x, "IsDeleted") == false);
             modelBuilder.Entity<StpTask>().HasQueryFilter(x => EF.Property<bool>(x, "IsDeleted") == false);
             modelBuilder.Entity<MultichoiceTaskAnswer>().HasQueryFilter(x => EF.Property<bool>(x, "IsDeleted") == false);
+
+            modelBuilder.Entity<Skill>().HasIndex((x) => x.Name).IsUnique();
+            ;
+            modelBuilder.Entity<TaskAndSkill>().HasIndex((x) => new { x.TaskId, x.SkillId}).IsUnique();
             modelBuilder.Entity<TestSection>().HasQueryFilter(x => EF.Property<bool>(x, "IsDeleted") == false);            
         }
 
