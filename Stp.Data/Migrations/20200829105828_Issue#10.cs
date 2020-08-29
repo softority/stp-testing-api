@@ -3,18 +3,28 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Stp.Data.Migrations
 {
-    public partial class Issue10v2 : Migration
+    public partial class Issue10 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<bool>(
-                name: "IsDeleted",
-                table: "TestSections",
-                nullable: false,
-                defaultValue: false);
+            migrationBuilder.CreateTable(
+                name: "TestSection",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(nullable: true),
+                    Position = table.Column<int>(nullable: false),
+                    TestId = table.Column<long>(nullable: false),
+                    IsDeleted = table.Column<bool>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TestSection", x => x.Id);
+                });
 
             migrationBuilder.CreateTable(
-                name: "TestSectionAndTasks",
+                name: "TestSectionAndTask",
                 columns: table => new
                 {
                     Id = table.Column<long>(nullable: false)
@@ -25,40 +35,39 @@ namespace Stp.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TestSectionAndTasks", x => x.Id);
+                    table.PrimaryKey("PK_TestSectionAndTask", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_TestSectionAndTasks_Task_TaskId",
+                        name: "FK_TestSectionAndTask_Task_TaskId",
                         column: x => x.TaskId,
                         principalTable: "Task",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_TestSectionAndTasks_TestSections_TestSectionId",
+                        name: "FK_TestSectionAndTask_TestSection_TestSectionId",
                         column: x => x.TestSectionId,
-                        principalTable: "TestSections",
+                        principalTable: "TestSection",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_TestSectionAndTasks_TaskId",
-                table: "TestSectionAndTasks",
+                name: "IX_TestSectionAndTask_TaskId",
+                table: "TestSectionAndTask",
                 column: "TaskId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TestSectionAndTasks_TestSectionId",
-                table: "TestSectionAndTasks",
+                name: "IX_TestSectionAndTask_TestSectionId",
+                table: "TestSectionAndTask",
                 column: "TestSectionId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "TestSectionAndTasks");
+                name: "TestSectionAndTask");
 
-            migrationBuilder.DropColumn(
-                name: "IsDeleted",
-                table: "TestSections");
+            migrationBuilder.DropTable(
+                name: "TestSection");
         }
     }
 }

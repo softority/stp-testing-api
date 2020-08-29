@@ -245,8 +245,8 @@ namespace Stp.TestingApi.Controllers
             task.Position = position;
 
             int shift = position == minPosition ? 1 : -1;
-            _db.Tasks
-                .Where(x => (x.CategoryId == task.CategoryId && x.Position >= minPosition && x.Position <= maxPosition))
+            tasks
+                .Where(x => (x.Id != task.Id && x.Position >= minPosition && x.Position <= maxPosition))
                 .ToList()
                 .ForEach(c => c.Position += shift);
 

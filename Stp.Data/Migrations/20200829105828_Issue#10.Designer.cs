@@ -10,8 +10,8 @@ using Stp.Data;
 namespace Stp.Data.Migrations
 {
     [DbContext(typeof(TestingDbContext))]
-    [Migration("20200828044616_Issue#10-v3")]
-    partial class Issue10v3
+    [Migration("20200829105828_Issue#10")]
+    partial class Issue10
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
