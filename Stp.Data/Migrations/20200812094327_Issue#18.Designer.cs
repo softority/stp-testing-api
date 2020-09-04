@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Stp.Data;
@@ -9,9 +10,10 @@ using Stp.Data;
 namespace Stp.Data.Migrations
 {
     [DbContext(typeof(TestingDbContext))]
-    partial class TestingDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200812094327_Issue#18")]
+    partial class Issue18
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -56,9 +58,6 @@ namespace Stp.Data.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
 
                     b.ToTable("Skill");
                 });
@@ -124,8 +123,7 @@ namespace Stp.Data.Migrations
 
                     b.HasIndex("SkillId");
 
-                    b.HasIndex("TaskId", "SkillId")
-                        .IsUnique();
+                    b.HasIndex("TaskId");
 
                     b.ToTable("TaskAndSkill");
                 });
@@ -182,55 +180,6 @@ namespace Stp.Data.Migrations
                     b.ToTable("TestCategory");
                 });
 
-            modelBuilder.Entity("Stp.Data.Entities.TestSection", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.Property<int>("Position")
-                        .HasColumnType("integer");
-
-                    b.Property<long>("TestId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TestSection");
-                });
-
-            modelBuilder.Entity("Stp.Data.Entities.TestSectionAndTask", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<long>("TaskId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("TaskPosition")
-                        .HasColumnType("integer");
-
-                    b.Property<long>("TestSectionId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TaskId");
-
-                    b.HasIndex("TestSectionId");
-
-                    b.ToTable("TestSectionAndTask");
-                });
-
             modelBuilder.Entity("Stp.Data.Entities.MultichoiceTaskAnswer", b =>
                 {
                     b.HasOne("Stp.Data.Entities.StpTask", "Task")
@@ -276,21 +225,6 @@ namespace Stp.Data.Migrations
                     b.HasOne("Stp.Data.Entities.TestCategory", "Parent")
                         .WithMany()
                         .HasForeignKey("ParentId");
-                });
-
-            modelBuilder.Entity("Stp.Data.Entities.TestSectionAndTask", b =>
-                {
-                    b.HasOne("Stp.Data.Entities.StpTask", "Task")
-                        .WithMany()
-                        .HasForeignKey("TaskId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Stp.Data.Entities.TestSection", "TestSection")
-                        .WithMany("TestSectionsAndTasks")
-                        .HasForeignKey("TestSectionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

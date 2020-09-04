@@ -25,12 +25,21 @@ namespace Stp.Data
             modelBuilder.Entity<TaskCategory>().HasQueryFilter(x => EF.Property<bool>(x, "IsDeleted") == false);
             modelBuilder.Entity<StpTask>().HasQueryFilter(x => EF.Property<bool>(x, "IsDeleted") == false);
             modelBuilder.Entity<MultichoiceTaskAnswer>().HasQueryFilter(x => EF.Property<bool>(x, "IsDeleted") == false);
+
+            modelBuilder.Entity<Skill>().HasIndex((x) => x.Name).IsUnique();
+            ;
+            modelBuilder.Entity<TaskAndSkill>().HasIndex((x) => new { x.TaskId, x.SkillId}).IsUnique();
+            modelBuilder.Entity<TestSection>().HasQueryFilter(x => EF.Property<bool>(x, "IsDeleted") == false);            
         }
 
-        public DbSet<TestCategory> TestCategoryList { get; set; }
-        public DbSet<TaskCategory> TaskCategoryList { get; set; }
-        public DbSet<StpTask> TaskList { get; set; }
-        public DbSet<MultichoiceTaskAnswer> MultichoiceAnswerList { get; set; }
+        public DbSet<TestCategory> TestCategories { get; set; }
+        public DbSet<TaskCategory> TaskCategories { get; set; }
+        public DbSet<StpTask> Tasks { get; set; }
+        public DbSet<MultichoiceTaskAnswer> MultichoiceTaskAnswers { get; set; }
+        public DbSet<Skill> Skills { get; set; }
+        public DbSet<TaskAndSkill> TaskAndSkills { get; set; }
+        public DbSet<TestSection> TestSections { get; set; }
+        public DbSet<TestSectionAndTask> TestSectionAndTasks { get; set; }
 
-}
+    }
 }

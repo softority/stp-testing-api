@@ -28,14 +28,16 @@ namespace Stp.TestingApi.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<List<TaskCategoryDto>> GetCategories()
         {
-            var res = _db.TaskCategoryList
+            var res = _db.TaskCategories
                 .Select(x => new TaskCategoryDto()
                 {
                     Id = x.Id,
                     Name = x.Name,
                     ParentId = x.ParentId,
                     Position = x.Position
-                }).ToList();
+                })
+                .OrderBy(x => x.Id) // TODO: OrderBy Position
+                .ToList();
 
             return res;
         }
@@ -46,25 +48,34 @@ namespace Stp.TestingApi.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public ActionResult<TaskCategoryDto> CreateCategory(CreateCategoryCommand cmd)
+        public ActionResult<TaskCategoryDto> CreateCategory([FromBody] CreateCategoryCommand cmd)
         {
             // TODO: Validation
             if (cmd.ParentCategoryId != null)
             {
-                var res = _db.TaskCategoryList.Find(cmd.ParentCategoryId.Value);
+                var res = _db.TaskCategories.Find(cmd.ParentCategoryId.Value);
                 if (res == null)
                 {
                     return BadRequest($"ParentCategoryId={cmd.ParentCategoryId} doesn't exist");
                 }
             }
-            var maxPos = _db.TaskCategoryList.Max(x => x.Position);
+
+            var maxPos = _db.TaskCategories.Max(x => (int?)x.Position);
+            if (maxPos == null)
+            {
+                maxPos = 0;
+            }
+            else
+            {
+                ++maxPos;
+            }
             var newCategory = new TaskCategory()
             {
                 Name = cmd.Name,
                 ParentId = cmd.ParentCategoryId,
-                Position = maxPos > 0 ? ++maxPos : 0
+                Position = maxPos.Value
             };
-            _db.TaskCategoryList.Add(newCategory);
+            _db.TaskCategories.Add(newCategory);
             _db.SaveChanges();
 
             return CreatedAtAction(
@@ -78,13 +89,13 @@ namespace Stp.TestingApi.Controllers
                 });
         }
 
-        [HttpPut(nameof(UpdateCategoryName))]
+        [HttpPut("UpdateCategoryName/{categoryId}")] // TODO: <??>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult UpdateCategoryName(long categoryId, [FromBody] string name)
         {
-            var category = _db.TaskCategoryList.Find(categoryId);
+            var category = _db.TaskCategories.Find(categoryId);
             if (category == null)
             {
                 return NotFound($"Category with Id={categoryId} doesn't exist");
@@ -104,7 +115,7 @@ namespace Stp.TestingApi.Controllers
             throw new NotImplementedException();
         }
 
-        [HttpDelete(nameof(DeleteCategory))]
+        [HttpDelete("DeleteCategory/{categoryId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -112,7 +123,7 @@ namespace Stp.TestingApi.Controllers
         public IActionResult DeleteCategory(long categoryId)
         {
             // TODO: forbid deletion if category contains at least one test
-            var category = _db.TaskCategoryList
+            var category = _db.TaskCategories
                 .Include(x => x.Tasks)
                 .FirstOrDefault(x => x.Id == categoryId);
 
@@ -121,12 +132,18 @@ namespace Stp.TestingApi.Controllers
                 return NotFound($"Category with Id={categoryId} doesn't exist");
             }
 
+            var hasChildren = _db.TaskCategories.Any(x => x.ParentId == category.Id);
+            if (hasChildren)
+            {
+                return BadRequest($"Deletion is forbidden. Category contains nested categories.");
+            }
+
             if (category.Tasks.Count > 0)
             {
                 return BadRequest($"Deletion is forbidden. Category contains tasks.");
             }
 
-            _db.TaskCategoryList.Remove(category);
+            _db.TaskCategories.Remove(category);
             _db.SaveChanges();
 
             return NoContent();

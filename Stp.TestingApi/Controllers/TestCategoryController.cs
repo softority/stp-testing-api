@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Stp.Data;
+using Stp.Data.Entities;
 using Stp.TestingApi.Contracts;
 
 namespace Stp.TestingApi.Controllers
@@ -20,41 +21,132 @@ namespace Stp.TestingApi.Controllers
             _db = db;
         }
 
-        /* https://localhost:5001/api/TestCategory/GetCategories */
         [HttpGet(nameof(GetCategories))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public List<TestCategoryDto> GetCategories()
         {
-            throw new NotImplementedException();
+            var res = _db.TestCategories.Select(x => new TestCategoryDto()
+            {
+                Id = x.Id,
+                Name = x.Name,
+                ParentId = x.ParentId,
+                Position = x.Position,
+                Tests = new List<TestSummaryDto>()
+            }).ToList();
+
+            return res;
         }
 
         /// <returns>Id of just added category</returns>
         [HttpPost(nameof(CreateCategory))]
-        public long CreateCategory(CreateCategoryCommand cmd)
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public ActionResult<long> CreateCategory(CreateCategoryCommand cmd)
         {
-            throw new NotImplementedException();
+            if (cmd == null)
+            {
+                return BadRequest("Incorrect command sent");
+            }
+
+            var parentCategory = _db.TestCategories.Find(cmd.ParentCategoryId);
+
+            if(parentCategory == null)
+            {
+                return BadRequest($"Parent test category with id={cmd.ParentCategoryId} doesn't exist");
+            }
+
+            var category = new TestCategory()
+            {
+                Name = cmd.Name,
+                ParentId = cmd.ParentCategoryId
+            };
+
+            _db.TestCategories.Add(category);
+            _db.SaveChanges();
+
+            return category.Id;
         }
 
         [HttpPut(nameof(UpdateCategoryName))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult UpdateCategoryName(long categoryId, [FromBody]string name)
         {
-            throw new NotImplementedException();
+            var category = _db.TestCategories.Find(categoryId);
+
+            if (category == null)
+            {
+               return NotFound($"Test category with id={categoryId} doesn't exist");
+            }
+
+            category.Name = name;
+            _db.SaveChanges();
+
+            return Ok();
         }
 
         /// <summary>
         /// Changes position of the category in the tree
         /// </summary>
         [HttpPut(nameof(MoveCategory))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult MoveCategory(MoveCategoryCommand cmd)
         {
-            throw new NotImplementedException();
+            var parentCategory = _db.TestCategories.Find(cmd.ParentCategoryId);
+
+            if (parentCategory == null)
+            {
+                return BadRequest($"Parent test category with id={cmd.ParentCategoryId} doesn't exist");
+            }
+
+            var categories = _db.TestCategories.Where(c => c.ParentId == cmd.ParentCategoryId).ToList().OrderBy(c => c.Position);
+
+            if (categories.Count() < 2)
+            {
+                return BadRequest($"Parent test category with id={cmd.ParentCategoryId} contain less then 2 nodes");
+            }
+
+            var category = categories.FirstOrDefault(c => c.Id == cmd.CategoryId);
+
+            if (category == null)
+            {
+                return NotFound($"Test category with id={cmd.CategoryId} and ParentId={cmd.ParentCategoryId} doesn't exist");
+            }
+
+            var maxPosition = Math.Max(category.Position, cmd.Position);
+            var minPosition = Math.Min(category.Position, cmd.Position);
+            category.Position = cmd.Position;
+            int shift = cmd.Position == minPosition ? 1 : -1;
+            categories.Where(c => (c.Position >= minPosition && c.Position <= maxPosition && c.Id != category.Id))
+                .ToList()
+                .ForEach(c => c.Position += shift);
+
+            _db.SaveChanges();
+
+            return Ok();
         }
 
         [HttpDelete(nameof(DeleteCategory))]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult DeleteCategory(long categoryId)
         {
             // TODO: forbid deletion if category contains at least one test
+            var category = _db.TestCategories.Find(categoryId);
 
-            throw new NotImplementedException();
+            if (category == null)
+            {
+                return NotFound($"Test category with id={categoryId} doesn't exist");
+            }
+
+            category.IsDeleted = true;
+            _db.SaveChanges();
+
+            return NoContent();
         }
     }
 }
