@@ -79,6 +79,8 @@ namespace Stp.TestingApi.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<TaskDto> CreateTask([FromBody] CreateTaskCommand cmd)
         {
+            throw new Exception("FATAL ERROR!");
+
             var category = _db.TaskCategories.Find(cmd.TaskCategoryId);
             if (category == null)
             {
