@@ -32,6 +32,8 @@ namespace Stp.TestingApi.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IEnumerable<TaskDto> GetTasksByCategory(long taskCategoryId)
         {
+            //throw new Exception("FATAL ERROR!");
+
             var res = _db.Tasks
                 .Where(x => x.CategoryId == taskCategoryId)
                 .Include(x => x.MultichoiceAnswers)
