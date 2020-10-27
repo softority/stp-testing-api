@@ -19,7 +19,7 @@ namespace Stp.TestingApi.Contracts
         public long TaskCategoryId { get; set; }
         
         [StringLength(512, MinimumLength = 1)]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [Range(1, 100)]
         public int Points { get; set; }
@@ -31,16 +31,23 @@ namespace Stp.TestingApi.Contracts
         [EnumMemberValue(typeof(TaskType))]
         public TaskType Type { get; set; }
 
+        [Required]
+        [EnumMemberValue(typeof(TaskComplexity))]
         public TaskComplexity Complexity { get; set; }        
 
         [Required]
-        public List<SkillStateDto> Skills { get; set; }
+        public List<SkillStateDto>? Skills { get; set; }
     }
     public class SkillStateDto
     {
+        [Range(1, long.MaxValue)]
         public long? Id { get; set; }
-        public string Name { get; set; }
 
+        [StringLength(512, MinimumLength = 1)]
+        public string? Name { get; set; }
+
+        [Required]
+        [EnumMemberValue(typeof(SkillState))]
         public SkillState State { get; set; }
     }
     public enum SkillState
@@ -51,21 +58,35 @@ namespace Stp.TestingApi.Contracts
     }
     public class TaskDto
     {
-        public TaskSummaryDto TaskSummary { get; set; }
-        public MultichoiceTaskInfoDto MultichoiceTaskInfo { get; set; }
-        public CodingTaskInfoDto CodingTaskInfo { get; set; }
+        public TaskSummaryDto? TaskSummary { get; set; }
+        public MultichoiceTaskInfoDto? MultichoiceTaskInfo { get; set; }
+        public CodingTaskInfoDto? CodingTaskInfo { get; set; }
     }
 
     public class TaskSummaryDto
     {
+        [Range(1, long.MaxValue)]
         public long Id { get; set; }
-        public string Name { get; set; }
+
+        [StringLength(512, MinimumLength = 1)]
+        public string? Name { get; set; }
+
+        [EnumMemberValue(typeof(TaskType))]
         public TaskType Type { get; set; }
+
+        [Range(1, 100)]
         public int Points { get; set; }
+
+        [Range(1, int.MaxValue)]
         public int Position { get; set; }
-        public int DurationMinutes { get; set; }        
+
+        [Range(1, 180)]
+        public int DurationMinutes { get; set; }
+
+        [EnumMemberValue(typeof(TaskComplexity))]
         public TaskComplexity Complexity { get; set; }
-        public List<SkillDto> Skills { get; set; }
+
+        public List<SkillDto>? Skills { get; set; }
     }
     
 
