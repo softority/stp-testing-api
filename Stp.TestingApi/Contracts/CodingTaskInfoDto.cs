@@ -12,6 +12,6 @@ namespace Stp.TestingApi.Contracts
         public string? Question { get; set; }
 
         [StringLength(2048, MinimumLength = 1)]
-        public string? CodingToolUrl { get; set; }
+        public string? CodingToolUrl { get; set; } 
     }
 }
