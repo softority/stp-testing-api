@@ -331,10 +331,10 @@ namespace Stp.TestingApi.Controllers
 
             foreach (var skill in skills)
             {
-                var st = skill.State;
+                var st = skill?.State;
 
                 TaskAndSkill newLink;
-                switch (skill.State)
+                switch (skill?.State)
                 {
                     case SkillState.Added:
 
@@ -346,7 +346,7 @@ namespace Stp.TestingApi.Controllers
                         newLink = new TaskAndSkill()
                         {
                             TaskId = task.Id,
-                            SkillId = skill.Id.Value
+                            SkillId = skill.Id.GetValueOrDefault()
                         };
                         task.TaskAndSkills.Add(newLink);
 
@@ -372,7 +372,7 @@ namespace Stp.TestingApi.Controllers
                         task.TaskAndSkills.Add(newLink);
                         break;
                     default:
-                        return BadRequest($"Unexpected SkillState: {skill.State}");
+                        return BadRequest($"Unexpected SkillState: {skill?.State}");
                 }
             }
             _db.SaveChanges();

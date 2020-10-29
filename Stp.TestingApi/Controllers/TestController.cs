@@ -12,21 +12,21 @@ namespace Stp.TestingApi.Controllers
     public class TestDto
     {
         public long Id { get; set; }
-        public string Name { get; set; }
+        public string? Name { get; set; }
         public TestStatus Status { get; set; }
-        public List<string> Skills { get; set; }
+        public List<string>? Skills { get; set; }
         public int DurationMinutes { get; set; }
         public int TasksCount { get; set; }
-        public List<TestSectionDto> Sections { get; set; }
+        public List<TestSectionDto>? Sections { get; set; }
     }
     public class TestSectionDto
     {
         public long Id { get; set; }
-        public string Name { get; set; }
+        public string? Name { get; set; }
         public int Position { get; set; }
         public int DurationMinutes { get; set; }
         public int TasksCount { get; set; }
-        public List<TaskDto> Tasks { get; set; }
+        public List<TaskDto>? Tasks { get; set; }
     }
     public class CreateTestCommand
     {
@@ -34,7 +34,7 @@ namespace Stp.TestingApi.Controllers
         /// Id of the test category to which the test is being added
         /// </summary>
         public long TestCategoryId { get; set; }
-        public string Name { get; set; }
+        public string? Name { get; set; }
         public int Position { get; set; }
     }
     public class AddTaskCommand

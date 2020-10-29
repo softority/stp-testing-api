@@ -7,8 +7,11 @@ namespace Stp.TestingApi.Contracts
         /// <summary>
         /// If null - adding to the root
         /// </summary>
+        [Range(1, long.MaxValue)]
         public long? ParentCategoryId { get; set; }
-        
-        public string Name { get; set; }
+
+        [Required]
+        [StringLength(512, MinimumLength = 1)]
+        public string? Name { get; set; }
     }
 }

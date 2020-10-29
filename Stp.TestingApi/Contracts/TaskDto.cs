@@ -18,8 +18,8 @@ namespace Stp.TestingApi.Contracts
         [Range(1, long.MaxValue)]
         public long TaskCategoryId { get; set; }
         
-        [StringLength(512, MinimumLength = 1)]
         [Required]
+        [StringLength(512, MinimumLength = 1)]
         public string? Name { get; set; }
 
         [Range(1, 100)]
@@ -39,29 +39,18 @@ namespace Stp.TestingApi.Contracts
         [Required]
         public List<SkillStateDto>? Skills { get; set; }
     }
-    public class SkillStateDto //: IValidatableObject
+    public class SkillStateDto
     {
+        [Range(1, long.MaxValue)]
         public long? Id { get; set; }
 
-        [StringLength(512, MinimumLength = 1)]
         [Required]
+        [StringLength(512, MinimumLength = 1)]
         public string? Name { get; set; }
 
         [Required]
         [EnumMemberValue(typeof(SkillState))]
         public SkillState State { get; set; }
-
-        //public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        //{
-        //    if (Name.Length > 56 && State != SkillState.New)
-        //    {
-        //        yield return new ValidationResult("Invalid state");
-        //    }
-        //    if (Name.Length > 156 && State != SkillState.Removed)
-        //    {
-        //        yield return new ValidationResult("");
-        //    }
-        //}
     }
     public enum SkillState
     {
@@ -71,21 +60,36 @@ namespace Stp.TestingApi.Contracts
     }
     public class TaskDto
     {
-        public TaskSummaryDto TaskSummary { get; set; }
-        public MultichoiceTaskInfoDto MultichoiceTaskInfo { get; set; }
-        public CodingTaskInfoDto CodingTaskInfo { get; set; }
+        public TaskSummaryDto? TaskSummary { get; set; }
+        public MultichoiceTaskInfoDto? MultichoiceTaskInfo { get; set; }
+        public CodingTaskInfoDto? CodingTaskInfo { get; set; }
     }
 
     public class TaskSummaryDto
     {
+        [Range(1, long.MaxValue)]
         public long Id { get; set; }
-        public string Name { get; set; }
+
+        [Required]
+        [StringLength(512, MinimumLength = 1)]
+        public string? Name { get; set; }
+
+        [EnumMemberValue(typeof(TaskType))]
         public TaskType Type { get; set; }
+
+        [Range(1, 100)]
         public int Points { get; set; }
+
+        [Range(1, int.MaxValue)]
         public int Position { get; set; }
-        public int DurationMinutes { get; set; }        
+
+        [Range(1, 180)]
+        public int DurationMinutes { get; set; }
+
+        [EnumMemberValue(typeof(TaskComplexity))]
         public TaskComplexity Complexity { get; set; }
-        public List<SkillDto> Skills { get; set; }
+
+        public List<SkillDto>? Skills { get; set; }
     }
     
 
