@@ -308,7 +308,7 @@ namespace Stp.TestingApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public ActionResult<List<SkillDto>> UpdateSkills(long taskId, [FromBody] List<SkillStateDto?> skills)
+        public ActionResult<List<SkillDto>> UpdateSkills(long taskId, [FromBody] List<SkillStateDto> skills)
         {
             //return BadRequest($"Failed to add the skill. The task already contains it.");
 

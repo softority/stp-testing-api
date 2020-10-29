@@ -10,6 +10,7 @@ namespace Stp.TestingApi.Contracts
         [Range(1, long.MaxValue)]
         public long? ParentCategoryId { get; set; }
 
+        [Required]
         [StringLength(512, MinimumLength = 1)]
         public string? Name { get; set; }
     }

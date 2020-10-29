@@ -8,6 +8,7 @@ namespace Stp.TestingApi.Contracts
 {
     public class CreateTestSectionCommand
     {
+        [Required]
         [StringLength(512, MinimumLength = 1)]
         public string? Name { get; set; }
 
