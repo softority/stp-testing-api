@@ -12,7 +12,7 @@ namespace Stp.TestingApi.Contracts
         [StringLength(512, MinimumLength = 1)]
         public string? Name { get; set; }
 
-        [Range(1, int.MaxValue)]
+        [Range(0, int.MaxValue)]
         public int Position { get; set; }
 
         [Range(1, long.MaxValue)]

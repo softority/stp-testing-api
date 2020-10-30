@@ -8,7 +8,7 @@ namespace Stp.TestingApi.Contracts
 {
     public class CodingTaskInfoDto
     {
-        [StringLength(512, MinimumLength = 1)]
+        [StringLength(3000, MinimumLength = 1)]
         public string? Question { get; set; }
 
         [StringLength(2048, MinimumLength = 1)]

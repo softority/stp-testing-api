@@ -13,7 +13,7 @@ namespace Stp.TestingApi.Contracts
         [Range(1, long.MaxValue)]
         public long CategoryId { get; set; }
 
-        [Range(1, int.MaxValue)]
+        [Range(0, int.MaxValue)]
         public int Position { get; set; }
     }
 }

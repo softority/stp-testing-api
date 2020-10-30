@@ -8,7 +8,6 @@ namespace Stp.TestingApi.Contracts
 {
     public class MultichoiceTaskInfoDto
     {
-        [StringLength(512, MinimumLength = 1)]
         public string? Question { get; set; }
 
         public List<MultichoiceTaskAnswerDto>? Answers { get; set; }

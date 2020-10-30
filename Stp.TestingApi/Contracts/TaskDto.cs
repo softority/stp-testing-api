@@ -67,26 +67,17 @@ namespace Stp.TestingApi.Contracts
 
     public class TaskSummaryDto
     {
-        [Range(1, long.MaxValue)]
         public long Id { get; set; }
-
-        [Required]
-        [StringLength(512, MinimumLength = 1)]
         public string? Name { get; set; }
 
-        [EnumMemberValue(typeof(TaskType))]
         public TaskType Type { get; set; }
 
-        [Range(1, 100)]
         public int Points { get; set; }
 
-        [Range(1, int.MaxValue)]
         public int Position { get; set; }
 
-        [Range(1, 180)]
         public int DurationMinutes { get; set; }
 
-        [EnumMemberValue(typeof(TaskComplexity))]
         public TaskComplexity Complexity { get; set; }
 
         public List<SkillDto>? Skills { get; set; }
