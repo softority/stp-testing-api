@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mime;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NJsonSchema.Validation;
+using Stp.Data;
+using Stp.Data.Entities;
 using Stp.Data.Enums;
 using Stp.TestingApi.Contracts;
 
@@ -62,27 +66,80 @@ namespace Stp.TestingApi.Controllers
         public int SectionId { get; set; }
     }
 
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class TestController : ControllerBase
     {
-        [HttpGet(nameof(GetTestById))]
-        public TestDto GetTestById(long testId)
+        private readonly TestingDbContext _db;
+
+        public TestController(TestingDbContext db)
         {
-            throw new NotImplementedException();
+            _db = db;
+        }
+
+        [HttpGet(nameof(GetTestById))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public ActionResult<TestDto> GetTestById(long testId)
+        {
+            var test = _db.Tests.Find(testId);
+
+            if (test == null)
+            {
+                return NotFound($"Test with id={testId} doesn't exist");
+            }
+
+            var res = new TestDto()
+            {
+                Id = test.Id,
+                Name = test.Name,
+                DurationMinutes = test.DurationMinutes,
+                //Sections = test.
+                //Skills = test.Skills,
+                //Status = test.Status,
+                TasksCount = test.TasksCount
+            };
+
+            return res;
+            
         }
 
         /// <returns>Id of the added test</returns>
         [HttpPost(nameof(CreateTest))]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public long CreateTest(CreateTestCommand cmd)
         {
-            throw new NotImplementedException();
+            var newTest = new Test()
+            {
+                Name = cmd.Name
+            };
+
+            _db.Tests.Add(newTest);
+            _db.SaveChanges();
+
+            return newTest.Id;
         }
 
         [HttpDelete(nameof(DeleteTest))]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult DeleteTest(long testId)
         {
-            throw new NotImplementedException();
+            var test = _db.Tests.Find(testId);
+
+            if (test == null)
+            {
+                return NotFound($"Test with id={testId} doesn't exist");
+            }
+
+            test.IsDeleted = true;
+            _db.SaveChanges();
+
+            return NoContent();
         }
 
         /// <summary>

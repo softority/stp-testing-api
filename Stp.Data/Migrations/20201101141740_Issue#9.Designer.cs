@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Stp.Data;
@@ -9,9 +10,10 @@ using Stp.Data;
 namespace Stp.Data.Migrations
 {
     [DbContext(typeof(TestingDbContext))]
-    partial class TestingDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201101141740_Issue#9")]
+    partial class Issue9
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
