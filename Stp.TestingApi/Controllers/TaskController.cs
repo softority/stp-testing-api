@@ -124,6 +124,12 @@ namespace Stp.TestingApi.Controllers
                 Skill skillToAdd = null;
                 if (skill.State == SkillState.New)
                 {
+                    bool nameExists = _db.Skills.Any(x => x.Name.ToUpper() == skill.Name.ToUpper());
+                    if (nameExists)
+                    {
+                        return BadRequest($"Skill with name {skill.Name} already exists!");
+                    }
+
                     skillToAdd = new Skill()
                     {
                         Name = skill.Name
@@ -356,7 +362,13 @@ namespace Stp.TestingApi.Controllers
                         task.TaskAndSkills.Remove(skillToRemove);
                         break;
                     case SkillState.New:
-                        // TODO: add unique name check
+
+                        bool nameExists = _db.Skills.Any(x => (skill.Name != null && x.Name.ToUpper() == skill.Name.ToUpper()));
+                        if (nameExists)
+                        {
+                            return BadRequest($"Skill with name {skill?.Name} already exists!");
+                        }
+
                         var skillToAdd = new Skill()
                         {
                             Name = skill.Name

@@ -8,10 +8,8 @@ namespace Stp.Data.Entities
     [Table("Skill")]
     public class Skill
     {
-        public long Id { get; set; }
-        
+        public long Id { get; set; }        
         public string Name { get; set; }
-
         public virtual ICollection<TaskAndSkill> TaskAndSkills { get; set; }
     }
 }
