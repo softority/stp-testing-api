@@ -9,8 +9,10 @@ namespace Stp.Data.Entities
     public class TaskAndSkill
     {
         public long Id { get; set; }
+
         [ForeignKey(nameof(Task))]
         public long TaskId { get; set; }
+
         [ForeignKey(nameof(Skill))]
         public long SkillId { get; set; }
 

@@ -166,25 +166,13 @@ namespace Stp.Data.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<int>("DurationMinutes")
-                        .HasColumnType("integer");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
-                    b.Property<int>("Points")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Skills")
-                        .HasColumnType("text");
-
                     b.Property<int>("Status")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("TasksCount")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -238,6 +226,8 @@ namespace Stp.Data.Migrations
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TestId");
 
                     b.ToTable("TestSection");
                 });
@@ -312,6 +302,15 @@ namespace Stp.Data.Migrations
                     b.HasOne("Stp.Data.Entities.TestCategory", "Parent")
                         .WithMany()
                         .HasForeignKey("ParentId");
+                });
+
+            modelBuilder.Entity("Stp.Data.Entities.TestSection", b =>
+                {
+                    b.HasOne("Stp.Data.Entities.Test", "Test")
+                        .WithMany("TestSections")
+                        .HasForeignKey("TestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Stp.Data.Entities.TestSectionAndTask", b =>

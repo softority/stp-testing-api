@@ -93,11 +93,7 @@ namespace Stp.TestingApi.Controllers
             {
                 Id = test.Id,
                 Name = test.Name,
-                DurationMinutes = test.DurationMinutes,
-                //Sections = test.
-                //Skills = test.Skills,
-                //Status = test.Status,
-                TasksCount = test.TasksCount
+                Status = test.Status
             };
 
             return res;
