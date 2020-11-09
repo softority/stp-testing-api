@@ -40,6 +40,7 @@ namespace Stp.TestingApi.Controllers
         public long TestCategoryId { get; set; }
         public string? Name { get; set; }
         public int Position { get; set; }
+        public string Description { get; set; }
     }
     public class AddTaskCommand
     {
@@ -93,24 +94,42 @@ namespace Stp.TestingApi.Controllers
             {
                 Id = test.Id,
                 Name = test.Name,
-                Status = test.Status
+                Status = test.Status,
+                Sections = _db.TestSections.Where(x => x.TestId == testId).Select(x => new TestSectionDto()
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    //DurationMinutes
+                    Position = x.Position,
+                    //Tasks
+                    //TasksCount
+                }).ToList()
             };
 
-            return res;
-            
+            return res;            
         }
 
         /// <returns>Id of the added test</returns>
         [HttpPost(nameof(CreateTest))]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public long CreateTest(CreateTestCommand cmd)
         {
+            var category = _db.TaskCategories.Find(cmd.TestCategoryId);
+
+            if (category == null)
+            {
+                //return NotFound($"Test category with id={cmd.TestCategoryId} doesn't exist");
+            }
+
             var newTest = new Test()
             {
-                Name = cmd.Name
+                Name = cmd.Name,
+                Description = cmd.Description,
+                Status = TestStatus.Created                                
             };
 
             _db.Tests.Add(newTest);
@@ -166,11 +185,20 @@ namespace Stp.TestingApi.Controllers
         }
 
         [HttpPut(nameof(UpdateTestName))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult UpdateTestName(long testId, [FromBody]string name)
         {
-            throw new NotImplementedException();
-        }
+            var test = _db.Tests.Find(testId);
 
-        
+            if (test == null)
+            {
+                return NotFound($"Test with id={testId} doesn't exist");
+            }
+
+            test.Name = name;
+            _db.SaveChanges();
+
+            return Ok();
+        }        
     }
 }

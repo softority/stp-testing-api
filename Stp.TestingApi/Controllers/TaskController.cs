@@ -315,7 +315,7 @@ namespace Stp.TestingApi.Controllers
             //StpTask task = _db.Tasks.Find(taskId);
             StpTask task = _db.Tasks
                 .Include(x => x.TaskAndSkills)
-                .Where(x => x.Id == taskId)
+                .Where(x => x.Id == taskId)s
                 .FirstOrDefault();
 
             if (task == null)
@@ -371,7 +371,7 @@ namespace Stp.TestingApi.Controllers
                         };
                         task.TaskAndSkills.Add(newLink);
                         break;
-                    default:
+                    default:w
                         return BadRequest($"Unexpected SkillState: {skill?.State}");
                 }
             }
