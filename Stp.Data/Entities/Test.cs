@@ -22,6 +22,7 @@ namespace Stp.Data.Entities
         public TestStatus Status { get; set; }
         public bool IsDeleted { get; set; }
 
-        public virtual List<TestSection> TestSections { get; set; }
+        public virtual ICollection<TestSection> TestSections { get; set; }
+        public virtual ICollection<TestCategoryAndTest> TestCategoryAndTests {get; set;}
     }
 }

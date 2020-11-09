@@ -5,6 +5,7 @@ using System.Net.Mime;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NJsonSchema.Validation;
 using Stp.Data;
 using Stp.Data.Entities;
@@ -40,7 +41,6 @@ namespace Stp.TestingApi.Controllers
         public long TestCategoryId { get; set; }
         public string? Name { get; set; }
         public int Position { get; set; }
-        public string Description { get; set; }
     }
     public class AddTaskCommand
     {
@@ -116,23 +116,34 @@ namespace Stp.TestingApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public long CreateTest(CreateTestCommand cmd)
+        public ActionResult<long> CreateTest([FromBody]CreateTestCommand cmd)
         {
-            var category = _db.TaskCategories.Find(cmd.TestCategoryId);
+            var category = _db.TestCategories.Where(c => c.Id == cmd.TestCategoryId)
+                                             .Include(c => c.TestCategoryAndTests)
+                                             .FirstOrDefault();
 
             if (category == null)
             {
-                //return NotFound($"Test category with id={cmd.TestCategoryId} doesn't exist");
+                return NotFound($"Test category with id={cmd.TestCategoryId} doesn't exist");
             }
 
             var newTest = new Test()
             {
                 Name = cmd.Name,
-                Description = cmd.Description,
                 Status = TestStatus.Created                                
             };
 
             _db.Tests.Add(newTest);
+            _db.SaveChanges();
+
+            _db.TestCategoryAndTests.Add(new TestCategoryAndTest()
+            {
+                TestCategoryId = category.Id,
+                TestId = newTest.Id,
+                TestPosition = cmd.Position
+            });
+
+            //TODO: Remove the second saving
             _db.SaveChanges();
 
             return newTest.Id;

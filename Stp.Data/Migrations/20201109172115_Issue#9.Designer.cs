@@ -10,7 +10,7 @@ using Stp.Data;
 namespace Stp.Data.Migrations
 {
     [DbContext(typeof(TestingDbContext))]
-    [Migration("20201105180848_Issue#9")]
+    [Migration("20201109172115_Issue#9")]
     partial class Issue9
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -208,6 +208,32 @@ namespace Stp.Data.Migrations
                     b.ToTable("TestCategory");
                 });
 
+            modelBuilder.Entity("Stp.Data.Entities.TestCategoryAndTest", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<long>("TestCategoryId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("TestId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("TestPosition")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TestId");
+
+                    b.HasIndex("TestCategoryId", "TestId")
+                        .IsUnique();
+
+                    b.ToTable("TestCategoryAndTest");
+                });
+
             modelBuilder.Entity("Stp.Data.Entities.TestSection", b =>
                 {
                     b.Property<long>("Id")
@@ -304,6 +330,21 @@ namespace Stp.Data.Migrations
                     b.HasOne("Stp.Data.Entities.TestCategory", "Parent")
                         .WithMany()
                         .HasForeignKey("ParentId");
+                });
+
+            modelBuilder.Entity("Stp.Data.Entities.TestCategoryAndTest", b =>
+                {
+                    b.HasOne("Stp.Data.Entities.TestCategory", "TestCategory")
+                        .WithMany("TestCategoryAndTests")
+                        .HasForeignKey("TestCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Stp.Data.Entities.Test", "Test")
+                        .WithMany("TestCategoryAndTests")
+                        .HasForeignKey("TestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Stp.Data.Entities.TestSection", b =>

@@ -26,11 +26,11 @@ namespace Stp.Data
             modelBuilder.Entity<StpTask>().HasQueryFilter(x => EF.Property<bool>(x, "IsDeleted") == false);
             modelBuilder.Entity<MultichoiceTaskAnswer>().HasQueryFilter(x => EF.Property<bool>(x, "IsDeleted") == false);
 
-            modelBuilder.Entity<Skill>().HasIndex((x) => x.Name).IsUnique();
-            ;
+            modelBuilder.Entity<Skill>().HasIndex((x) => x.Name).IsUnique();            
             modelBuilder.Entity<TaskAndSkill>().HasIndex((x) => new { x.TaskId, x.SkillId}).IsUnique();
             modelBuilder.Entity<TestSection>().HasQueryFilter(x => EF.Property<bool>(x, "IsDeleted") == false);
             modelBuilder.Entity<Test>().HasQueryFilter(x => EF.Property<bool>(x, "IsDeleted") == false);
+            modelBuilder.Entity<TestCategoryAndTest>().HasIndex((x) => new { x.TestCategoryId, x.TestId}).IsUnique();
         }
 
         public DbSet<TestCategory> TestCategories { get; set; }
@@ -42,6 +42,7 @@ namespace Stp.Data
         public DbSet<TestSection> TestSections { get; set; }
         public DbSet<TestSectionAndTask> TestSectionAndTasks { get; set; }
         public DbSet<Test> Tests { get; set; }
+        public DbSet<TestCategoryAndTest> TestCategoryAndTests { get; set; }
 
     }
 }

@@ -16,5 +16,7 @@ namespace Stp.Data.Entities
         public virtual TestCategory Parent { get; set; }
         public int Position { get; set; }
         public bool IsDeleted { get; set; }
+
+        public virtual ICollection<TestCategoryAndTest> TestCategoryAndTests { get; set; }
     }
 }
